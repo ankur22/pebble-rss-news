@@ -1,0 +1,23 @@
+{
+    "appKeys": {},
+    "capabilities": [
+        ""
+    ],
+    "companyName": "rss-news",
+    "longName": "rss-news",
+    "projectType": "native",
+    "resources": {
+        "media": []
+    },
+    "sdkVersion": "3",
+    "shortName": "rss-news",
+    "targetPlatforms": [
+        "aplite",
+        "basalt"
+    ],
+    "uuid": "3a9f4e3d-3f01-446d-b8bf-b1d4da839d1f",
+    "versionLabel": "1.0",
+    "watchapp": {
+        "watchface": false
+    }
+}
