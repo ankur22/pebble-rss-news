@@ -13,7 +13,7 @@
 // TODO: Display categories data
 
 int main(void) {
-	handle_splash_screen_init();
+	show_splash_screen();
 	app_event_loop();
-	handle_splash_screen_deinit();
+	hide_splash_screen();
 }

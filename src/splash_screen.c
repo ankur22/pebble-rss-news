@@ -1,40 +1,41 @@
 #include <pebble.h>
 #include "splash_screen.h"
+
+// BEGIN AUTO-GENERATED UI CODE; DO NOT MODIFY
+static Window *s_window;
+static GFont s_res_droid_serif_28_bold;
+static TextLayer *s_textlayer_1;
+
+static void initialise_ui(void) {
+  s_window = window_create();
   
-static const int Y_CENTER = 62; 
-
-Window *window;
-TextLayer *text_layer;
-
-void handle_splash_screen_init(void) {
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "Loading splash screen");
-  
-	// Create a window and text layer
-	window = window_create();
-  text_layer = text_layer_create(GRect(0, Y_CENTER, 144, 154));
-	
-	// Set the text, font, and text alignment
-	text_layer_set_text(text_layer, "rss-news");
-	text_layer_set_font(text_layer, fonts_get_system_font(FONT_KEY_DROID_SERIF_28_BOLD));
-	text_layer_set_text_alignment(text_layer, GTextAlignmentCenter);
-	
-	// Add the text and bitmap layers to the window
-	layer_add_child(window_get_root_layer(window), text_layer_get_layer(text_layer));
-
-	// Push the window
-	window_stack_push(window, true);
-	
-	APP_LOG(APP_LOG_LEVEL_DEBUG, "Splash screen loaded");
+  s_res_droid_serif_28_bold = fonts_get_system_font(FONT_KEY_DROID_SERIF_28_BOLD);
+  // s_textlayer_1
+  s_textlayer_1 = text_layer_create(GRect(0, 62, 144, 37));
+  text_layer_set_text(s_textlayer_1, "rss-news");
+  text_layer_set_text_alignment(s_textlayer_1, GTextAlignmentCenter);
+  text_layer_set_font(s_textlayer_1, s_res_droid_serif_28_bold);
+  layer_add_child(window_get_root_layer(s_window), (Layer *)s_textlayer_1);
 }
 
-void handle_splash_screen_deinit(void) {
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "Deleting splash screen");
-  
-	// Destroy the text layer
-	text_layer_destroy(text_layer);
-	
-	// Destroy the window
-	window_destroy(window);
-  
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "Splash screen deleted");
+static void destroy_ui(void) {
+  window_destroy(s_window);
+  text_layer_destroy(s_textlayer_1);
+}
+// END AUTO-GENERATED UI CODE
+
+static void handle_window_unload(Window* window) {
+  destroy_ui();
+}
+
+void show_splash_screen(void) {
+  initialise_ui();
+  window_set_window_handlers(s_window, (WindowHandlers) {
+    .unload = handle_window_unload,
+  });
+  window_stack_push(s_window, true);
+}
+
+void hide_splash_screen(void) {
+  window_stack_remove(s_window, true);
 }
