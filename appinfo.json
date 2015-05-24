@@ -7,7 +7,14 @@
     "longName": "rss-news",
     "projectType": "native",
     "resources": {
-        "media": []
+        "media": [
+            {
+                "file": "images/rss-news.png",
+                "menuIcon": true,
+                "name": "RSS_NEWS_MENU_LOGO",
+                "type": "png"
+            }
+        ]
     },
     "sdkVersion": "3",
     "shortName": "rss-news",
