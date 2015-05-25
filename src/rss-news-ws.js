@@ -42,7 +42,7 @@ function getDataForPebble(key, path) {
   req.open('GET', 'https://rss-news.appspot.com/0/pebble/' + path, true);
   req.onload = function(e) {
     console.log('Received a response for MESSAGE_TYPE ' + key);
-    obj = {};
+    var obj = {};
     if(req.status == 200) {
       var response = JSON.parse(req.responseText);
       console.log('lmd: ' + response.lmd);
