@@ -7,8 +7,16 @@ static Window *s_window;
 static GFont s_res_droid_serif_28_bold;
 static TextLayer *s_textlayer_1;
 
+#ifdef PBL_SDK_3
+static StatusBarLayer *s_status_bar;
+#endif
+
 static void initialise_ui(void) {
   s_window = window_create();
+#ifndef PBL_SDK_3
+  window_set_fullscreen(s_window, false);
+#endif
+  Layer *window_layer = window_get_root_layer(s_window);
   
   s_res_droid_serif_28_bold = fonts_get_system_font(FONT_KEY_DROID_SERIF_28_BOLD);
   // s_textlayer_1
@@ -16,7 +24,13 @@ static void initialise_ui(void) {
   text_layer_set_text(s_textlayer_1, "rss-news");
   text_layer_set_text_alignment(s_textlayer_1, GTextAlignmentCenter);
   text_layer_set_font(s_textlayer_1, s_res_droid_serif_28_bold);
-  layer_add_child(window_get_root_layer(s_window), (Layer *)s_textlayer_1);
+  layer_add_child(window_layer, (Layer *)s_textlayer_1);
+  
+#ifdef PBL_SDK_3
+  // Set up the status bar last to ensure it is on top of other Layers
+  s_status_bar = status_bar_layer_create();
+  layer_add_child(window_layer, status_bar_layer_get_layer(s_status_bar));
+#endif
 }
 
 static void destroy_ui(void) {
@@ -44,6 +58,7 @@ void show_splash_screen(void) {
   window_stack_push(s_window, true);
   
   APP_LOG(APP_LOG_LEVEL_DEBUG, "Loaded splash screen");
+  
   displayMainMenu();
 }
 

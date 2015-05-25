@@ -1,5 +1,9 @@
 {
-    "appKeys": {},
+    "appKeys": {
+        "GET_CATEGORIES": 2,
+        "GET_LATEST": 0,
+        "GET_TOP": 1
+    },
     "capabilities": [
         ""
     ],
@@ -17,7 +21,7 @@
         ]
     },
     "sdkVersion": "3",
-    "shortName": "rss-news",
+    "shortName": "master",
     "targetPlatforms": [
         "aplite",
         "basalt"

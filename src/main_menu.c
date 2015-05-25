@@ -1,8 +1,12 @@
-#include "main_menu.h"
 #include <pebble.h>
+#include "main_menu.h"
 
 static Window *s_window;
 static MenuLayer *s_menu_layer;
+
+#ifdef PBL_SDK_3
+static StatusBarLayer *s_status_bar;
+#endif
 
 #define NUM_MENU_SECTIONS 1
 #define NUM_MENU_ITEMS 3
@@ -75,6 +79,11 @@ static void handle_window_unload(Window* window) {
 
 static void initialise_ui(void) {
   s_window = window_create();
+#ifndef PBL_SDK_3
+  window_set_fullscreen(s_window, false);
+#endif
+  
+Layer *window_layer = window_get_root_layer(s_window);
   
   s_menu_layer = menu_layer_create(GRect(0, 0, 144, 152));
   menu_layer_set_callbacks(s_menu_layer, NULL, (MenuLayerCallbacks){
@@ -86,7 +95,13 @@ static void initialise_ui(void) {
     .select_click = menu_select_callback,
   });
   menu_layer_set_click_config_onto_window(s_menu_layer, s_window);
-  layer_add_child(window_get_root_layer(s_window), (Layer *)s_menu_layer);
+  layer_add_child(window_layer, (Layer *)s_menu_layer);
+  
+#ifdef PBL_SDK_3
+  // Set up the status bar last to ensure it is on top of other Layers
+  s_status_bar = status_bar_layer_create();
+  layer_add_child(window_layer, status_bar_layer_get_layer(s_status_bar));
+#endif
   
   APP_LOG(APP_LOG_LEVEL_DEBUG, "Initialised main menu ui");
 }
