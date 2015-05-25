@@ -34,6 +34,8 @@ void show_splash_screen(void) {
     .unload = handle_window_unload,
   });
   window_stack_push(s_window, true);
+  
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "Loaded splash screen");
 }
 
 void hide_splash_screen(void) {
