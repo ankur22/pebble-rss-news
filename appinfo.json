@@ -1,8 +1,12 @@
 {
     "appKeys": {
-        "GET_CATEGORIES": 2,
-        "GET_LATEST": 0,
-        "GET_TOP": 1
+        "ALL": 4,
+        "ERROR": 6,
+        "GET_CATEGORIES": 3,
+        "GET_LATEST": 1,
+        "GET_TOP": 2,
+        "HELLO": 5,
+        "MESSAGE_TYPE": 0
     },
     "capabilities": [
         ""

@@ -1,6 +1,14 @@
 #include <pebble.h>
 #include "splash_screen.h"
 #include "main_menu.h"
+  
+#define MESSAGE_TYPE 0
+#define GET_LATEST 1
+#define GET_TOP 2
+#define GET_CATEGORIES 3
+#define ALL 4
+#define HELLO 5
+#define ERROR 6
 
 // BEGIN AUTO-GENERATED UI CODE; DO NOT MODIFY
 static Window *s_window;
@@ -43,11 +51,96 @@ static void handle_window_unload(Window* window) {
   destroy_ui();
 }
 
+static void do_gets(int key) {
+  DictionaryIterator *iter;
+  app_message_outbox_begin(&iter);
+  dict_write_int(iter, MESSAGE_TYPE, &key, sizeof(int), true);
+  app_message_outbox_send();
+}
+
+static void sendDoGetMessageIfBluetoothConnected() {
+  if (bluetooth_connection_service_peek()) {
+    APP_LOG(APP_LOG_LEVEL_INFO, "Phone is connected!");
+    do_gets(ALL);
+  } else {
+    APP_LOG(APP_LOG_LEVEL_INFO, "Phone is not connected!");
+  }
+}
+
 static void displayMainMenu(void) {
   hide_splash_screen();
   show_main_menu();
   
   APP_LOG(APP_LOG_LEVEL_DEBUG, "Main menu has been set to display");
+}
+
+static void inbox_received_callback(DictionaryIterator *iterator, void *context) {
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "Message recieved!");
+  
+  // Get the first pair
+  Tuple *t = dict_read_first(iterator);
+
+  // Process all pairs present
+  while (t != NULL) {
+    // Long lived buffer
+    static char s_buffer[64];
+
+    // Process this pair's key
+    switch (t->key) {
+      case ALL:
+        snprintf(s_buffer, sizeof(s_buffer), "ALL Received '%s'", t->value->cstring);
+        APP_LOG(APP_LOG_LEVEL_DEBUG, s_buffer);
+        displayMainMenu();
+        break;
+      case GET_LATEST:
+        snprintf(s_buffer, sizeof(s_buffer), "GET_LATEST Received '%s'", t->value->cstring);
+        APP_LOG(APP_LOG_LEVEL_DEBUG, s_buffer);
+        break;
+      case HELLO:
+        snprintf(s_buffer, sizeof(s_buffer), "HELLO Received '%s'", t->value->cstring);
+        APP_LOG(APP_LOG_LEVEL_DEBUG, s_buffer);
+        sendDoGetMessageIfBluetoothConnected();
+        break;
+      case ERROR:
+        snprintf(s_buffer, sizeof(s_buffer), "ERROR Received '%s'", t->value->cstring);
+        APP_LOG(APP_LOG_LEVEL_ERROR, s_buffer);
+        break;
+      default:
+        snprintf(s_buffer, sizeof(s_buffer), "Unidentified Received '%s'", t->value->cstring);
+        APP_LOG(APP_LOG_LEVEL_DEBUG, s_buffer);
+        break;
+    }
+
+    // Get next pair, if any
+    t = dict_read_next(iterator);
+  }
+}
+
+static void inbox_dropped_callback(AppMessageResult reason, void *context) {
+  char str[100];
+  snprintf(str, sizeof(str), "Message dropped! Reason: %d", reason);
+  APP_LOG(APP_LOG_LEVEL_ERROR, str);
+}
+
+static void outbox_failed_callback(DictionaryIterator *iterator, AppMessageResult reason, void *context) {
+  char str[100];
+  snprintf(str, sizeof(str), "Outbox send failed! Reason: %d", reason);
+  APP_LOG(APP_LOG_LEVEL_ERROR, str);
+}
+
+static void outbox_sent_callback(DictionaryIterator *iterator, void *context) {
+  APP_LOG(APP_LOG_LEVEL_INFO, "Outbox send success!");
+}
+
+static void registerCallbacks(void) {
+  app_message_register_inbox_received(inbox_received_callback);
+  app_message_register_inbox_dropped(inbox_dropped_callback);
+  app_message_register_outbox_failed(outbox_failed_callback);
+  app_message_register_outbox_sent(outbox_sent_callback);
+}
+
+static void openAppMessage(void) {
+  app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
 }
 
 void show_splash_screen(void) {
@@ -59,7 +152,8 @@ void show_splash_screen(void) {
   
   APP_LOG(APP_LOG_LEVEL_DEBUG, "Loaded splash screen");
   
-  displayMainMenu();
+  registerCallbacks();
+  openAppMessage();
 }
 
 void hide_splash_screen(void) {
