@@ -1,5 +1,6 @@
 #include <pebble.h>
 #include "splash_screen.h"
+#include "main_menu.h"
 
 // BEGIN AUTO-GENERATED UI CODE; DO NOT MODIFY
 static Window *s_window;
@@ -28,6 +29,13 @@ static void handle_window_unload(Window* window) {
   destroy_ui();
 }
 
+static void displayMainMenu(void) {
+  hide_splash_screen();
+  show_main_menu();
+  
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "Main menu has been set to display");
+}
+
 void show_splash_screen(void) {
   initialise_ui();
   window_set_window_handlers(s_window, (WindowHandlers) {
@@ -36,6 +44,7 @@ void show_splash_screen(void) {
   window_stack_push(s_window, true);
   
   APP_LOG(APP_LOG_LEVEL_DEBUG, "Loaded splash screen");
+  displayMainMenu();
 }
 
 void hide_splash_screen(void) {
