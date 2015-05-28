@@ -1,7 +1,9 @@
 Pebble.addEventListener('ready',
   function(e) {
     console.log('JavaScript app ready and running!');
-    sendPebbleResponseFromRssNews({'HELLO':'Hello'});
+    var obj = {};
+    obj.HELLO = 'hello';
+    sendPebbleResponseFromRssNews(obj);
   }
 );
 
@@ -11,19 +13,7 @@ Pebble.addEventListener('appmessage',
     console.log('Key received: ' + e.payload.MESSAGE_TYPE);
     if (e.payload.MESSAGE_TYPE !== null) {
         switch (e.payload.MESSAGE_TYPE) {
-          case 1:         // GET_LATEST
-              console.log('GET_LATEST request received');
-              getDataForPebble('GET_LATEST', 'latest');
-              break;
-          case 2:         // GET_TOP
-              console.log('GET_TOP request received');
-              getDataForPebble('GET_TOP', 'top');
-              break;
-          case 3:         // GET_CATEGORIES
-              console.log('GET_CATEGORIES request received');
-              getDataForPebble('GET_CATEGORIES', 'categories');
-              break;
-          case 4:         // ALL
+          case 4:
               console.log('ALL request received');
               getDataForPebble('ALL', 'all');
               break;
@@ -45,12 +35,27 @@ function getDataForPebble(key, path) {
     var obj = {};
     if(req.status == 200) {
       var response = JSON.parse(req.responseText);
-      console.log('lmd: ' + response.lmd);
-      obj[key] = response;
-      sendPebbleResponseFromRssNews(obj);
+      if (response.latest !== undefined) {
+        console.log('latest lmd: ' + response.latest.lmd);
+        obj.GET_LATEST = unescape(encodeURI(response.latest.content));
+        console.log('latest: ' + obj.GET_LATEST)
+        sendPebbleResponseFromRssNews(obj);
+      }
+      if (response.top !== undefined) {
+        console.log('top lmd: ' + response.top.lmd);
+        obj.GET_TOP = unescape(encodeURIresponse.top.content));
+        console.log('top: ' + obj.GET_TOP)
+        sendPebbleResponseFromRssNews(obj);
+      }
+      if (response.categories !== undefined) {
+        console.log('categories lmd: ' + response.categories.lmd);
+        obj.GET_CATEGORIES = unescape(encodeURIresponse.categories.content));
+        console.log('categories: ' + obj.GET_CATEGORIES)
+        sendPebbleResponseFromRssNews(obj);
+      }
     } else {
       console.log('Error: ' + req.status);
-      obj['ERROR'] = req.status.toString();
+      obj.ERROR = req.status.toString();
       sendPebbleResponseFromRssNews(obj);
     }
   };
