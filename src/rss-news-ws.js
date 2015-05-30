@@ -36,20 +36,21 @@ function getDataForPebble(key, path) {
     if(req.status == 200) {
       var response = JSON.parse(req.responseText);
       if (response.latest !== undefined) {
+        var test = "|Ashley Graham Explains Why You Shouldn\u2019t Call Her a \u2018Plus-Sized\u2019 Model";
         console.log('latest lmd: ' + response.latest.lmd);
-        obj.GET_LATEST = unescape(encodeURI(response.latest.content));
+        obj.GET_LATEST = decodeUnicode(test);
         console.log('latest: ' + obj.GET_LATEST)
         sendPebbleResponseFromRssNews(obj);
       }
       if (response.top !== undefined) {
         console.log('top lmd: ' + response.top.lmd);
-        obj.GET_TOP = unescape(encodeURIresponse.top.content));
+        obj.GET_TOP = unescape(encodeURI(response.top.content));
         console.log('top: ' + obj.GET_TOP)
         sendPebbleResponseFromRssNews(obj);
       }
       if (response.categories !== undefined) {
         console.log('categories lmd: ' + response.categories.lmd);
-        obj.GET_CATEGORIES = unescape(encodeURIresponse.categories.content));
+        obj.GET_CATEGORIES = unescape(encodeURI(response.categories.content));
         console.log('categories: ' + obj.GET_CATEGORIES)
         sendPebbleResponseFromRssNews(obj);
       }
@@ -60,6 +61,14 @@ function getDataForPebble(key, path) {
     }
   };
   req.send(null);
+}
+
+function decodeUnicode(x) {
+  var r = /\\u([\d\w]{4})/gi;
+  x = x.replace(r, function (match, grp) {
+      return String.fromCharCode(parseInt(grp, 16)); } );
+  x = decodeURI(x);
+  return x;
 }
 
 function sendPebbleResponseFromRssNews(response) {
