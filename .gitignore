@@ -1,0 +1,7 @@
+/build
+
+*.c~
+.lock-waf_linux2_build
+
+
+*.js~

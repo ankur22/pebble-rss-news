@@ -32,24 +32,23 @@ function getDataForPebble(key, path) {
   req.open('GET', 'https://rss-news.appspot.com/0/pebble/' + path, true);
   req.onload = function(e) {
     console.log('Received a response for MESSAGE_TYPE ' + key);
-    var obj = {};
     if(req.status == 200) {
+      var obj = {};
       var response = JSON.parse(req.responseText);
       if (response.latest !== undefined) {
         console.log('latest lmd: ' + response.latest.lmd);
         obj.GET_LATEST = response.latest.content;
-        sendPebbleResponseFromRssNews(obj);
       }
       if (response.top !== undefined) {
         console.log('top lmd: ' + response.top.lmd);
         obj.GET_TOP = response.top.content;
-        sendPebbleResponseFromRssNews(obj);
       }
       if (response.categories !== undefined) {
         console.log('categories lmd: ' + response.categories.lmd);
         obj.GET_CATEGORIES = response.categories.content;
-        sendPebbleResponseFromRssNews(obj);
       }
+      obj.ALL = 'all done';
+      sendPebbleResponseFromRssNews(obj);
     } else {
       console.log('Error: ' + req.status);
       obj.ERROR = req.status.toString();
@@ -60,13 +59,12 @@ function getDataForPebble(key, path) {
 }
 
 function sendPebbleResponseFromRssNews(response) {
-  //console.log('Sending to pebble: ' + JSON.stringify(response));
   var transactionId = Pebble.sendAppMessage(response,
     function(e) {
       console.log('Successfully delivered message with transactionId=' + e.data.transactionId);
     },
     function(e) {
-      console.log('Unable to deliver message with transactionId=' + e.data.transactionId + ' Error is: ' + e.error.message);
+      console.log('Unable to deliver message with transactionId=' + e.data.transactionId + ' Error is: ' + e.data.error);
     }
   );
 }
