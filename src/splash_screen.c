@@ -15,6 +15,9 @@ static Window *s_window;
 static GFont s_res_droid_serif_28_bold;
 static TextLayer *s_textlayer_1;
 
+static char* _top;
+static char* _latest;
+
 #ifdef PBL_SDK_3
 static StatusBarLayer *s_status_bar;
 #endif
@@ -67,9 +70,9 @@ static void sendDoGetMessageIfBluetoothConnected() {
   }
 }
 
-static void displayMainMenu(void) {
+static void displayMainMenu(char *_top, char *_latest) {
   hide_splash_screen();
-  show_main_menu();
+  show_main_menu(_top, _latest);
   
   APP_LOG(APP_LOG_LEVEL_DEBUG, "Main menu has been set to display");
 }
@@ -90,15 +93,17 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
       case ALL:
         snprintf(s_buffer, sizeof(s_buffer), "ALL Received '%s'", t->value->cstring);
         APP_LOG(APP_LOG_LEVEL_DEBUG, s_buffer);
-        displayMainMenu();
+        displayMainMenu(_top, _latest);
         break;
       case GET_LATEST:
         snprintf(s_buffer, sizeof(s_buffer), "GET_LATEST Received '%s'", t->value->cstring);
         APP_LOG(APP_LOG_LEVEL_DEBUG, s_buffer);
+        _latest = t->value->cstring;
         break;
       case GET_TOP:
         snprintf(s_buffer, sizeof(s_buffer), "GET_TOP Received '%s'", t->value->cstring);
         APP_LOG(APP_LOG_LEVEL_DEBUG, s_buffer);
+        _top = t->value->cstring;
         break;
       case HELLO:
         snprintf(s_buffer, sizeof(s_buffer), "HELLO Received '%s'", t->value->cstring);

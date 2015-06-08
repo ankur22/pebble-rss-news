@@ -1,5 +1,6 @@
 #include <pebble.h>
 #include "main_menu.h"
+#include "latest_view.h"
 
 static Window *s_window;
 static MenuLayer *s_menu_layer;
@@ -53,6 +54,8 @@ static void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, v
   switch (cell_index->row) {
     case 0:
       APP_LOG(APP_LOG_LEVEL_DEBUG, "Selected Latest");
+      hide_main_menu();
+      show_latest_view(_latest);
       break;
     case 1:
       APP_LOG(APP_LOG_LEVEL_DEBUG, "Selected Top");
@@ -112,6 +115,7 @@ Layer *window_layer = window_get_root_layer(s_window);
 void show_main_menu(char* top, char* latest) {
   _top = top;
   _latest = latest;
+
   initialise_ui();
   window_set_window_handlers(s_window, (WindowHandlers) {
     .unload = handle_window_unload,

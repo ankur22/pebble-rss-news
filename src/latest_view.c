@@ -11,6 +11,8 @@ static StatusBarLayer *s_status_bar;
 #define NUM_MENU_SECTIONS 1
 static int numMenuItems = 0;
 
+static char *_latest[20];
+
 static uint16_t menu_get_num_sections_callback(MenuLayer *menu_layer, void *data) {
   return NUM_MENU_SECTIONS;
 }
@@ -31,32 +33,17 @@ static int16_t menu_get_header_height_callback(MenuLayer *menu_layer, uint16_t s
 static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
   switch (cell_index->section) {
     case 0:
-      switch (cell_index->row) {
-        case 0:
-          menu_cell_basic_draw(ctx, cell_layer, "Latest", "Latest headlines from all sources", NULL);
-          break;
-        case 1:
-          menu_cell_basic_draw(ctx, cell_layer, "Top", "Popular on rss-news", NULL);
-          break;
-        case 2:
-          menu_cell_basic_draw(ctx, cell_layer, "Categories", "All categories", NULL);
-          break;
+      if (numMenuItems > 0) {
+        APP_LOG(APP_LOG_LEVEL_DEBUG, _latest[cell_index->row]);
+        menu_cell_basic_draw(ctx, cell_layer, _latest[cell_index->row], NULL, NULL);
       }
       break;
   }
 }
 
 static void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
-  switch (cell_index->row) {
-    case 0:
-      APP_LOG(APP_LOG_LEVEL_DEBUG, "Selected Latest");
-      break;
-    case 1:
-      APP_LOG(APP_LOG_LEVEL_DEBUG, "Selected Top");
-      break;
-    case 2:
-      APP_LOG(APP_LOG_LEVEL_DEBUG, "Selected Categories");
-      break;
+  if (numMenuItems > 0) {
+    APP_LOG(APP_LOG_LEVEL_DEBUG, _latest[cell_index->row]);
   }
 }
 
@@ -106,7 +93,19 @@ static void initialise_ui(void) {
   APP_LOG(APP_LOG_LEVEL_DEBUG, "Initialised latest view ui");
 }
 
+void split_string(char *latest) {
+  int n = sizeof(_latest) / sizeof(_latest[0]);
+  if (n > 0) {
+    _latest[numMenuItems] = strtok(string,"/");
+    while(_latest[numMenuItems] != NULL) {
+       _latest[++numMenuItems] = strtok(NULL,"/");
+    }
+  }
+}
+
 void show_latest_view(char* latest) {
+  split_string(latest);
+
   initialise_ui();
   window_set_window_handlers(s_window, (WindowHandlers) {
     .unload = handle_window_unload,
