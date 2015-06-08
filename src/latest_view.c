@@ -1,5 +1,6 @@
 #include <pebble.h>
 #include "latest_view.h"
+#include "main_menu.h"
 
 static Window *s_window;
 static MenuLayer *s_menu_layer;
@@ -33,17 +34,31 @@ static int16_t menu_get_header_height_callback(MenuLayer *menu_layer, uint16_t s
 static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
   switch (cell_index->section) {
     case 0:
-      if (numMenuItems > 0) {
-        APP_LOG(APP_LOG_LEVEL_DEBUG, _latest[cell_index->row]);
-        menu_cell_basic_draw(ctx, cell_layer, _latest[cell_index->row], NULL, NULL);
-      }
+        switch (cell_index->row) {
+            case 0:
+                menu_cell_basic_draw(ctx, cell_layer, NULL, "Back", NULL);
+                break;
+            default:
+              if (numMenuItems > 0) {
+                APP_LOG(APP_LOG_LEVEL_DEBUG, _latest[cell_index->row-1]);
+                menu_cell_basic_draw(ctx, cell_layer, NULL, _latest[cell_index->row-1], NULL);
+              }
+              break;
+        }
       break;
   }
 }
 
 static void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
-  if (numMenuItems > 0) {
-    APP_LOG(APP_LOG_LEVEL_DEBUG, _latest[cell_index->row]);
+  switch (cell_index->section) {
+    case 0:
+        hide_latest_view();
+        break;
+    default:
+      if (numMenuItems > 0) {
+        APP_LOG(APP_LOG_LEVEL_DEBUG, _latest[cell_index->row]);
+      }
+      break;
   }
 }
 
@@ -93,17 +108,29 @@ static void initialise_ui(void) {
   APP_LOG(APP_LOG_LEVEL_DEBUG, "Initialised latest view ui");
 }
 
-void split_string(char *latest) {
-  int n = sizeof(_latest) / sizeof(_latest[0]);
-  if (n > 0) {
-    _latest[numMenuItems] = strtok(string,"/");
-    while(_latest[numMenuItems] != NULL) {
-       _latest[++numMenuItems] = strtok(NULL,"/");
+static void split_string(const char *latest) {
+  char *p;
+  char* new_str;
+  if (strlen(latest) > 0) {
+    new_str = malloc(strlen(&latest[1]));
+    strcpy(new_str,&latest[1]);
+
+    APP_LOG(APP_LOG_LEVEL_DEBUG, new_str);
+    p = strtok(new_str,"|");
+    while(p != NULL) {
+      APP_LOG(APP_LOG_LEVEL_DEBUG, p);
+      _latest[numMenuItems++] = p;
+      p = strtok(NULL, "|");
+      if (numMenuItems == 10) {
+        break;
+      }
     }
+    free(new_str);
   }
 }
 
 void show_latest_view(char* latest) {
+  APP_LOG(APP_LOG_LEVEL_DEBUG, latest);
   split_string(latest);
 
   initialise_ui();

@@ -54,7 +54,6 @@ static void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, v
   switch (cell_index->row) {
     case 0:
       APP_LOG(APP_LOG_LEVEL_DEBUG, "Selected Latest");
-      hide_main_menu();
       show_latest_view(_latest);
       break;
     case 1:
@@ -110,6 +109,10 @@ Layer *window_layer = window_get_root_layer(s_window);
 #endif
   
   APP_LOG(APP_LOG_LEVEL_DEBUG, "Initialised main menu ui");
+}
+
+void show_main_menu_no_params(void) {
+    show_main_menu(_top, _latest);
 }
 
 void show_main_menu(char* top, char* latest) {
