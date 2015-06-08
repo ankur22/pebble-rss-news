@@ -96,6 +96,10 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
         snprintf(s_buffer, sizeof(s_buffer), "GET_LATEST Received '%s'", t->value->cstring);
         APP_LOG(APP_LOG_LEVEL_DEBUG, s_buffer);
         break;
+      case GET_TOP:
+        snprintf(s_buffer, sizeof(s_buffer), "GET_TOP Received '%s'", t->value->cstring);
+        APP_LOG(APP_LOG_LEVEL_DEBUG, s_buffer);
+        break;
       case HELLO:
         snprintf(s_buffer, sizeof(s_buffer), "HELLO Received '%s'", t->value->cstring);
         APP_LOG(APP_LOG_LEVEL_DEBUG, s_buffer);

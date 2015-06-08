@@ -1,5 +1,5 @@
 #include <pebble.h>
-#include "main_menu.h"
+#include "latest_view.h"
 
 static Window *s_window;
 static MenuLayer *s_menu_layer;
@@ -9,10 +9,7 @@ static StatusBarLayer *s_status_bar;
 #endif
 
 #define NUM_MENU_SECTIONS 1
-#define NUM_MENU_ITEMS 3
-
-static char* _top;
-static char* _latest;
+static int numMenuItems = 0;
 
 static uint16_t menu_get_num_sections_callback(MenuLayer *menu_layer, void *data) {
   return NUM_MENU_SECTIONS;
@@ -21,7 +18,7 @@ static uint16_t menu_get_num_sections_callback(MenuLayer *menu_layer, void *data
 static uint16_t menu_get_num_rows_callback(MenuLayer *menu_layer, uint16_t section_index, void *data) {
   switch (section_index) {
     case 0:
-      return NUM_MENU_ITEMS;
+      return numMenuItems;
     default:
       return 0;
   }
@@ -85,8 +82,8 @@ static void initialise_ui(void) {
 #ifndef PBL_SDK_3
   window_set_fullscreen(s_window, false);
 #endif
-  
-Layer *window_layer = window_get_root_layer(s_window);
+
+  Layer *window_layer = window_get_root_layer(s_window);
   
   s_menu_layer = menu_layer_create(GRect(0, 0, 144, 152));
   menu_layer_set_callbacks(s_menu_layer, NULL, (MenuLayerCallbacks){
@@ -106,21 +103,19 @@ Layer *window_layer = window_get_root_layer(s_window);
   layer_add_child(window_layer, status_bar_layer_get_layer(s_status_bar));
 #endif
   
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "Initialised main menu ui");
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "Initialised latest view ui");
 }
 
-void show_main_menu(char* top, char* latest) {
-  _top = top;
-  _latest = latest;
+void show_latest_view(char* latest) {
   initialise_ui();
   window_set_window_handlers(s_window, (WindowHandlers) {
     .unload = handle_window_unload,
   });
   window_stack_push(s_window, true);
   
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "Main menu added to window stack");
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "Latest view added to window stack");
 }
 
-void hide_main_menu(void) {
+void hide_latest_view(void) {
   window_stack_remove(s_window, true);
 }
