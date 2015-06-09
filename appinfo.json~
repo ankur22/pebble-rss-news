@@ -21,11 +21,6 @@
                 "menuIcon": true,
                 "name": "RSS_NEWS_MENU_LOGO",
                 "type": "png"
-            },
-            {
-                "file": "images/bbc.png",
-                "name": "BBC_LOGO",
-                "type": "png"
             }
         ]
     },

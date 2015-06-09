@@ -5,6 +5,8 @@
 static Window *s_window;
 static MenuLayer *s_menu_layer;
 
+static GBitmap *s_logo_bitmap;
+
 #ifdef PBL_SDK_3
 static StatusBarLayer *s_status_bar;
 #endif
@@ -48,6 +50,7 @@ static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuI
                 graphics_context_set_text_color(ctx, GColorBlack);
             }
             graphics_draw_text(ctx, _latest[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(5, 0, 139, MAX_CELL_HEIGHT), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+            graphics_draw_bitmap_in_rect(ctx, s_logo_bitmap, GRect(2, 2, 50, 20));
         }
     break;
   }
@@ -97,6 +100,7 @@ static void menu_selection_changed(struct MenuLayer *menu_layer, MenuIndex new_i
 static void destroy_ui(void) {
   window_destroy(s_window);
   menu_layer_destroy(s_menu_layer);
+  gbitmap_destroy(s_logo_bitmap);
 }
 
 static void handle_window_unload(Window* window) {
@@ -126,6 +130,8 @@ static void initialise_ui(void) {
   });
   menu_layer_set_click_config_onto_window(s_menu_layer, s_window);
   layer_add_child(window_layer, (Layer *)s_menu_layer);
+
+  s_logo_bitmap = gbitmap_create_with_resource(RESOURCE_ID_BBC_LOGO);
   
 /*#ifdef PBL_SDK_3
   // Set up the status bar last to ensure it is on top of other Layers
