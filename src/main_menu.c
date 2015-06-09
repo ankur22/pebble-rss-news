@@ -18,6 +18,9 @@ static char* _latest;
 static int _numLatestItems = 0;
 static char *_latestArray[20];
 
+static int _numTopItems = 0;
+static char *_topArray[20];
+
 static uint16_t menu_get_num_sections_callback(MenuLayer *menu_layer, void *data) {
   return NUM_MENU_SECTIONS;
 }
@@ -53,7 +56,7 @@ static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuI
   }
 }
 
-static int split_string(char *fullString, char array[]) {
+static int split_string(char *fullString, char **array) {
   int num = 0;
   char *p;
   if (strlen(fullString) > 0) {
@@ -73,12 +76,11 @@ static void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, v
   switch (cell_index->row) {
     case 0:
       APP_LOG(APP_LOG_LEVEL_DEBUG, "Selected Latest");
-      //numLatestItems = split_string(_latest, latestArray);
-      show_latest_view(_latest);
+      show_latest_view(_latestArray, _numLatestItems);
       break;
     case 1:
       APP_LOG(APP_LOG_LEVEL_DEBUG, "Selected Top");
-      show_latest_view(_top);
+      show_latest_view(_topArray, _numTopItems);
       break;
     case 2:
       APP_LOG(APP_LOG_LEVEL_DEBUG, "Selected Categories");
@@ -139,6 +141,8 @@ void show_main_menu_no_params(void) {
 void show_main_menu(char* top, char* latest) {
   _top = top;
   _latest = latest;
+  _numLatestItems = split_string(_latest, _latestArray);
+  _numTopItems = split_string(_top, _topArray);
 
   initialise_ui();
   window_set_window_handlers(s_window, (WindowHandlers) {

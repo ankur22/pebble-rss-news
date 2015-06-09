@@ -14,7 +14,7 @@ static StatusBarLayer *s_status_bar;
 static int numMenuItems = 0;
 static int selectedMenuCell = 0;
 
-static char *_latest[20];
+static char **_latest;
 
 static uint16_t menu_get_num_sections_callback(MenuLayer *menu_layer, void *data) {
   return NUM_MENU_SECTIONS;
@@ -136,21 +136,9 @@ static void initialise_ui(void) {
   APP_LOG(APP_LOG_LEVEL_DEBUG, "Initialised latest view ui");
 }
 
-static void split_string(char *latest) {
-  char *p;
-  if (strlen(latest) > 0) {
-    p = strtok(latest,"|");
-    while(p != NULL) {
-      _latest[numMenuItems] = p;
-      APP_LOG(APP_LOG_LEVEL_DEBUG, _latest[numMenuItems]);
-      p = strtok(NULL, "|");
-      ++numMenuItems;
-    }
-  }
-}
-
-void show_latest_view(char* latest) {
-  split_string(latest);
+void show_latest_view(char **latest, int num) {
+  numMenuItems = num;
+  _latest = latest;
 
   initialise_ui();
   window_set_window_handlers(s_window, (WindowHandlers) {
@@ -166,7 +154,7 @@ void hide_latest_view(void) {
 }
 
 void reset_latest_view(void) {
-  numMenuItems = 0;
+  //numMenuItems = 0;
   selectedMenuCell = 0;
   //menu_layer_reload_data(s_menu_layer);
 }
