@@ -15,6 +15,9 @@ static StatusBarLayer *s_status_bar;
 static char* _top;
 static char* _latest;
 
+static int _numLatestItems = 0;
+static char *_latestArray[20];
+
 static uint16_t menu_get_num_sections_callback(MenuLayer *menu_layer, void *data) {
   return NUM_MENU_SECTIONS;
 }
@@ -37,10 +40,10 @@ static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuI
     case 0:
       switch (cell_index->row) {
         case 0:
-          menu_cell_basic_draw(ctx, cell_layer, "Latest", "Latest headlines from all sources", NULL);
+          menu_cell_basic_draw(ctx, cell_layer, "Latest", "Latest news", NULL);
           break;
         case 1:
-          menu_cell_basic_draw(ctx, cell_layer, "Top", "Popular on rss-news", NULL);
+          menu_cell_basic_draw(ctx, cell_layer, "Top", "Popular news", NULL);
           break;
         case 2:
           menu_cell_basic_draw(ctx, cell_layer, "Categories", "All categories", NULL);
@@ -50,14 +53,32 @@ static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuI
   }
 }
 
+static int split_string(char *fullString, char array[]) {
+  int num = 0;
+  char *p;
+  if (strlen(fullString) > 0) {
+    p = strtok(fullString,"|");
+    while(p != NULL) {
+      array[num] = p;
+      APP_LOG(APP_LOG_LEVEL_DEBUG, array[num]);
+      p = strtok(NULL, "|");
+      ++num;
+    }
+  }
+  return num;
+}
+
 static void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
+  reset_latest_view();
   switch (cell_index->row) {
     case 0:
       APP_LOG(APP_LOG_LEVEL_DEBUG, "Selected Latest");
+      //numLatestItems = split_string(_latest, latestArray);
       show_latest_view(_latest);
       break;
     case 1:
       APP_LOG(APP_LOG_LEVEL_DEBUG, "Selected Top");
+      show_latest_view(_top);
       break;
     case 2:
       APP_LOG(APP_LOG_LEVEL_DEBUG, "Selected Categories");
@@ -84,9 +105,9 @@ static void handle_window_unload(Window* window) {
 
 static void initialise_ui(void) {
   s_window = window_create();
-#ifndef PBL_SDK_3
+/*#ifndef PBL_SDK_3
   window_set_fullscreen(s_window, false);
-#endif
+#endif*/
   
 Layer *window_layer = window_get_root_layer(s_window);
   
@@ -102,11 +123,11 @@ Layer *window_layer = window_get_root_layer(s_window);
   menu_layer_set_click_config_onto_window(s_menu_layer, s_window);
   layer_add_child(window_layer, (Layer *)s_menu_layer);
   
-#ifdef PBL_SDK_3
+/*#ifdef PBL_SDK_3
   // Set up the status bar last to ensure it is on top of other Layers
   s_status_bar = status_bar_layer_create();
   layer_add_child(window_layer, status_bar_layer_get_layer(s_status_bar));
-#endif
+#endif*/
   
   APP_LOG(APP_LOG_LEVEL_DEBUG, "Initialised main menu ui");
 }

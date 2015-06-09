@@ -9,13 +9,19 @@ static MenuLayer *s_menu_layer;
 static StatusBarLayer *s_status_bar;
 #endif
 
+#define MAX_CELL_HEIGHT 60
 #define NUM_MENU_SECTIONS 1
 static int numMenuItems = 0;
+static int selectedMenuCell = 0;
 
 static char *_latest[20];
 
 static uint16_t menu_get_num_sections_callback(MenuLayer *menu_layer, void *data) {
   return NUM_MENU_SECTIONS;
+}
+
+static int16_t wp_cell_height(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
+    return MAX_CELL_HEIGHT;
 }
 
 static uint16_t menu_get_num_rows_callback(MenuLayer *menu_layer, uint16_t section_index, void *data) {
@@ -34,31 +40,41 @@ static int16_t menu_get_header_height_callback(MenuLayer *menu_layer, uint16_t s
 static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
   switch (cell_index->section) {
     case 0:
-        switch (cell_index->row) {
-            case 0:
-                menu_cell_basic_draw(ctx, cell_layer, NULL, "Back", NULL);
-                break;
-            default:
-              if (numMenuItems > 0) {
-                APP_LOG(APP_LOG_LEVEL_DEBUG, _latest[cell_index->row-1]);
-                menu_cell_basic_draw(ctx, cell_layer, NULL, _latest[cell_index->row-1], NULL);
-              }
-              break;
+        if (numMenuItems > 0) {
+            //menu_cell_basic_draw(ctx, cell_layer, NULL, _latest[cell_index->row], NULL);
+            if (selectedMenuCell == cell_index->row) {
+                graphics_context_set_text_color(ctx, GColorWhite);
+            } else {
+                graphics_context_set_text_color(ctx, GColorBlack);
+            }
+            graphics_draw_text(ctx, _latest[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(5, 0, 139, MAX_CELL_HEIGHT), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
         }
-      break;
+    break;
+  }
+}
+
+static int16_t get_menu_separator_height(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *callback_context) {
+    return 5;
+}
+
+static void menu_draw_separator(GContext *ctx, const Layer *cell_layer, MenuIndex *cell_index, void *callback_context) {
+  switch (cell_index->section) {
+    case 0:
+        if (numMenuItems > 0) {
+            graphics_context_set_stroke_color(ctx, GColorBlack);
+            graphics_draw_line(ctx, GPoint(5, 3), GPoint(139, 3));
+        }
+    break;
   }
 }
 
 static void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
   switch (cell_index->section) {
     case 0:
-        hide_latest_view();
-        break;
-    default:
       if (numMenuItems > 0) {
         APP_LOG(APP_LOG_LEVEL_DEBUG, _latest[cell_index->row]);
       }
-      break;
+    break;
   }
 }
 
@@ -66,6 +82,14 @@ static void menu_draw_header_callback(GContext* ctx, const Layer *cell_layer, ui
   switch (section_index) {
     case 0:
       menu_cell_basic_header_draw(ctx, cell_layer, "rss-news");
+      break;
+  }
+}
+
+static void menu_selection_changed(struct MenuLayer *menu_layer, MenuIndex new_index, MenuIndex old_index, void *callback_context) {
+  switch (new_index.section) {
+    case 0:
+      selectedMenuCell = new_index.row;
       break;
   }
 }
@@ -81,9 +105,9 @@ static void handle_window_unload(Window* window) {
 
 static void initialise_ui(void) {
   s_window = window_create();
-#ifndef PBL_SDK_3
+/*#ifndef PBL_SDK_3
   window_set_fullscreen(s_window, false);
-#endif
+#endif*/
 
   Layer *window_layer = window_get_root_layer(s_window);
   
@@ -92,45 +116,40 @@ static void initialise_ui(void) {
     .get_num_sections = menu_get_num_sections_callback,
     .get_num_rows = menu_get_num_rows_callback,
     .get_header_height = menu_get_header_height_callback,
+    .get_cell_height = wp_cell_height,
     .draw_header = menu_draw_header_callback,
     .draw_row = menu_draw_row_callback,
     .select_click = menu_select_callback,
+    .draw_separator = menu_draw_separator,
+    .get_separator_height = get_menu_separator_height,
+    .selection_changed = menu_selection_changed,
   });
   menu_layer_set_click_config_onto_window(s_menu_layer, s_window);
   layer_add_child(window_layer, (Layer *)s_menu_layer);
   
-#ifdef PBL_SDK_3
+/*#ifdef PBL_SDK_3
   // Set up the status bar last to ensure it is on top of other Layers
   s_status_bar = status_bar_layer_create();
   layer_add_child(window_layer, status_bar_layer_get_layer(s_status_bar));
-#endif
+#endif*/
   
   APP_LOG(APP_LOG_LEVEL_DEBUG, "Initialised latest view ui");
 }
 
-static void split_string(const char *latest) {
+static void split_string(char *latest) {
   char *p;
-  char* new_str;
   if (strlen(latest) > 0) {
-    new_str = malloc(strlen(&latest[1]));
-    strcpy(new_str,&latest[1]);
-
-    APP_LOG(APP_LOG_LEVEL_DEBUG, new_str);
-    p = strtok(new_str,"|");
+    p = strtok(latest,"|");
     while(p != NULL) {
-      APP_LOG(APP_LOG_LEVEL_DEBUG, p);
-      _latest[numMenuItems++] = p;
+      _latest[numMenuItems] = p;
+      APP_LOG(APP_LOG_LEVEL_DEBUG, _latest[numMenuItems]);
       p = strtok(NULL, "|");
-      if (numMenuItems == 10) {
-        break;
-      }
+      ++numMenuItems;
     }
-    free(new_str);
   }
 }
 
 void show_latest_view(char* latest) {
-  APP_LOG(APP_LOG_LEVEL_DEBUG, latest);
   split_string(latest);
 
   initialise_ui();
@@ -144,4 +163,10 @@ void show_latest_view(char* latest) {
 
 void hide_latest_view(void) {
   window_stack_remove(s_window, true);
+}
+
+void reset_latest_view(void) {
+  numMenuItems = 0;
+  selectedMenuCell = 0;
+  //menu_layer_reload_data(s_menu_layer);
 }
