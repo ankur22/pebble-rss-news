@@ -17,11 +17,13 @@ Pebble.addEventListener('appmessage',
               console.log('ALL request received');
               getDataForPebble('ALL', 'all');
               break;
-          case 7:
-              console.log('READING_LIST request received');
-              break;
           default:
-            console.log('Unexpected key received');
+            if (e.payload['0'] !== null) {
+                console.log('READING_LIST request received: ' + e.payload['0']);
+                addToReadingList(e.payload['0']);
+            } else {
+                console.log('Unexpected key received');
+            }
             break;
         }
     } else {
@@ -29,6 +31,31 @@ Pebble.addEventListener('appmessage',
     }
   }
 );
+
+function addToReadingList(url) {
+  var req = new XMLHttpRequest();
+  req.open('POST', 'https://rss-news.appspot.com/0/pebble/readingList?url=' + encodeURIComponent(url), true);
+  req.setRequestHeader('PebbleAccountToken', Pebble.getAccountToken());
+  req.onload = function(e) {
+    if(req.status == 200) {
+      console.log('Success: ' + JSON.stringify(req.responseText));
+      //var obj = {};
+      //obj.READING_LIST = req.responseText.username;
+      //sendPebbleResponseFromRssNews(obj);
+      Pebble.showSimpleNotificationOnPebble("Reading List Updated", "Go to rss-news.appspot.com/pebble/" + JSON.parse(req.responseText).username);
+    } else {
+      console.log('Error: ' + req.status + ' ' + JSON.stringify(req.responseText));
+      //obj.ERROR = req.status.toString();
+      //sendPebbleResponseFromRssNews(obj);
+      if(req.status == 409) {
+          Pebble.showSimpleNotificationOnPebble("Reading List Conflict", "Go to rss-news.appspot.com/pebble/" + JSON.parse(req.responseText).username);
+      } else {
+          Pebble.showSimpleNotificationOnPebble("Reading List Error", "Go to rss-news.appspot.com/pebble/" + JSON.parse(req.responseText).username);
+      }
+    }
+  };
+  req.send(null);
+}
 
 function getDataForPebble(key, path) {
   var req = new XMLHttpRequest();
@@ -40,7 +67,6 @@ function getDataForPebble(key, path) {
       var response = JSON.parse(req.responseText);
       if (response.latest !== undefined) {
         console.log('latest lmd: ' + response.latest.lmd);
-        console.log('token: ' + Pebble.getAccountToken());
         obj.GET_LATEST = response.latest.content;
       }
       if (response.top !== undefined) {

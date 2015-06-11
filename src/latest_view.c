@@ -2,6 +2,7 @@
 #include "latest_view.h"
 #include "main_menu.h"
 
+#define MESSAGE_TYPE 0
 #define READING_LIST 7
 
 static Window *s_window;
@@ -77,7 +78,7 @@ static void menu_draw_separator(GContext *ctx, const Layer *cell_layer, MenuInde
 static void do_post(char *url) {
   DictionaryIterator *iter;
   app_message_outbox_begin(&iter);
-  dict_write_cstring(iter, READING_LIST, url);
+  dict_write_cstring(iter, MESSAGE_TYPE, url);
   app_message_outbox_send();
 }
 
