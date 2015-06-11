@@ -2,6 +2,8 @@
 #include "latest_view.h"
 #include "main_menu.h"
 
+#define READING_LIST 7
+
 static Window *s_window;
 static MenuLayer *s_menu_layer;
 
@@ -17,6 +19,7 @@ static int numMenuItems = 0;
 static int selectedMenuCell = 0;
 
 static char **_latest;
+static char **_latestUrl;
 
 static uint16_t menu_get_num_sections_callback(MenuLayer *menu_layer, void *data) {
   return NUM_MENU_SECTIONS;
@@ -71,11 +74,19 @@ static void menu_draw_separator(GContext *ctx, const Layer *cell_layer, MenuInde
   }
 }
 
+static void do_post(char *url) {
+  DictionaryIterator *iter;
+  app_message_outbox_begin(&iter);
+  dict_write_cstring(iter, READING_LIST, url);
+  app_message_outbox_send();
+}
+
 static void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
   switch (cell_index->section) {
     case 0:
       if (numMenuItems > 0) {
-        APP_LOG(APP_LOG_LEVEL_DEBUG, _latest[cell_index->row]);
+        do_post(_latestUrl[cell_index->row]);
+        APP_LOG(APP_LOG_LEVEL_DEBUG, _latestUrl[cell_index->row]);
       }
     break;
   }
@@ -142,9 +153,10 @@ static void initialise_ui(void) {
   APP_LOG(APP_LOG_LEVEL_DEBUG, "Initialised latest view ui");
 }
 
-void show_latest_view(char **latest, int num) {
+void show_latest_view(char **latest, char **latestUrl, int num) {
   numMenuItems = num;
   _latest = latest;
+  _latestUrl = latestUrl;
 
   initialise_ui();
   window_set_window_handlers(s_window, (WindowHandlers) {

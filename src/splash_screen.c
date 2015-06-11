@@ -9,6 +9,7 @@
 #define ALL 4
 #define HELLO 5
 #define ERROR 6
+#define READING_LIST 7
 
 // BEGIN AUTO-GENERATED UI CODE; DO NOT MODIFY
 static Window *s_window;

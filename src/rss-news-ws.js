@@ -17,6 +17,9 @@ Pebble.addEventListener('appmessage',
               console.log('ALL request received');
               getDataForPebble('ALL', 'all');
               break;
+          case 7:
+              console.log('READING_LIST request received');
+              break;
           default:
             console.log('Unexpected key received');
             break;
@@ -37,6 +40,7 @@ function getDataForPebble(key, path) {
       var response = JSON.parse(req.responseText);
       if (response.latest !== undefined) {
         console.log('latest lmd: ' + response.latest.lmd);
+        console.log('token: ' + Pebble.getAccountToken());
         obj.GET_LATEST = response.latest.content;
       }
       if (response.top !== undefined) {

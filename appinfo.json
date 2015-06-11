@@ -6,6 +6,7 @@
         "GET_LATEST": 1,
         "GET_TOP": 2,
         "HELLO": 5,
+        "READING_LIST": 7,
         "MESSAGE_TYPE": 0
     },
     "capabilities": [
