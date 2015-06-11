@@ -21,6 +21,8 @@ static int selectedMenuCell = 0;
 
 static char **_latest;
 static char **_latestUrl;
+static char **_latestSource;
+static char **_latestCategory;
 
 static uint16_t menu_get_num_sections_callback(MenuLayer *menu_layer, void *data) {
   return NUM_MENU_SECTIONS;
@@ -54,7 +56,11 @@ static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuI
                 graphics_context_set_text_color(ctx, GColorBlack);
             }
             graphics_draw_text(ctx, _latest[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(5, 0, 139, MAX_CELL_HEIGHT), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
-            graphics_draw_bitmap_in_rect(ctx, s_logo_bitmap, GRect(2, 2, 50, 20));
+            //graphics_draw_bitmap_in_rect(ctx, s_logo_bitmap, GRect(2, 2, 50, 20));
+            graphics_context_set_text_color(ctx, GColorDarkGray);
+            //graphics_draw_text(ctx, _latestSource[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(5, 0, 139, MAX_CELL_HEIGHT), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+            //graphics_context_set_text_color(ctx, GColorVividCerulean);
+            //graphics_draw_text(ctx, _latestCategory[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(5, 0, 139, MAX_CELL_HEIGHT), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
         }
     break;
   }
@@ -154,10 +160,12 @@ static void initialise_ui(void) {
   APP_LOG(APP_LOG_LEVEL_DEBUG, "Initialised latest view ui");
 }
 
-void show_latest_view(char **latest, char **latestUrl, int num) {
+void show_latest_view(char **latest, char **latestUrl, char **latestSource, char **latestCategory, int num) {
   numMenuItems = num;
   _latest = latest;
   _latestUrl = latestUrl;
+  _latestSource = latestSource;
+  _latestCategory = latestCategory;
 
   initialise_ui();
   window_set_window_handlers(s_window, (WindowHandlers) {

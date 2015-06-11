@@ -18,10 +18,14 @@ static char* _latest;
 static int _numLatestItems = 0;
 static char *_latestArray[20];
 static char *_latestArrayUrl[20];
+static char *_latestArraySource[20];
+static char *_latestArrayCategory[20];
 
 static int _numTopItems = 0;
 static char *_topArray[20];
 static char *_topArrayUrl[20];
+static char *_topArraySource[20];
+static char *_topArrayCategory[20];
 
 static uint16_t menu_get_num_sections_callback(MenuLayer *menu_layer, void *data) {
   return NUM_MENU_SECTIONS;
@@ -58,7 +62,7 @@ static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuI
   }
 }
 
-static int split_string(char *fullString, char **array, char **arrayUrl) {
+static int split_string(char *fullString, char **array, char **arrayUrl, char **arraySource, char **arrayCategory) {
   int num = 0;
   char *p;
   if (strlen(fullString) > 0) {
@@ -67,6 +71,10 @@ static int split_string(char *fullString, char **array, char **arrayUrl) {
       array[num] = p;
       p = strtok(NULL, "|");
       arrayUrl[num] = p;
+      p = strtok(NULL, "|");
+      arraySource[num] = p;
+      p = strtok(NULL, "|");
+      arrayCategory[num] = p;
       p = strtok(NULL, "|");
       APP_LOG(APP_LOG_LEVEL_DEBUG, array[num]);
       APP_LOG(APP_LOG_LEVEL_DEBUG, arrayUrl[num]);
@@ -81,11 +89,11 @@ static void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, v
   switch (cell_index->row) {
     case 0:
       APP_LOG(APP_LOG_LEVEL_DEBUG, "Selected Latest");
-      show_latest_view(_latestArray, _latestArrayUrl, _numLatestItems);
+      show_latest_view(_latestArray, _latestArrayUrl, _latestArraySource, _latestArrayCategory, _numLatestItems);
       break;
     case 1:
       APP_LOG(APP_LOG_LEVEL_DEBUG, "Selected Top");
-      show_latest_view(_topArray, _topArrayUrl, _numTopItems);
+      show_latest_view(_topArray, _topArrayUrl, _topArraySource, _topArrayCategory, _numTopItems);
       break;
     case 2:
       APP_LOG(APP_LOG_LEVEL_DEBUG, "Selected Categories");
@@ -146,8 +154,8 @@ void show_main_menu_no_params(void) {
 void show_main_menu(char* top, char* latest) {
   _top = top;
   _latest = latest;
-  _numLatestItems = split_string(_latest, _latestArray, _latestArrayUrl);
-  _numTopItems = split_string(_top, _topArray, _topArrayUrl);
+  _numLatestItems = split_string(_latest, _latestArray, _latestArrayUrl, _latestArraySource, _latestArrayCategory);
+  _numTopItems = split_string(_top, _topArray, _topArrayUrl, _topArraySource, _topArrayCategory);
 
   initialise_ui();
   window_set_window_handlers(s_window, (WindowHandlers) {
