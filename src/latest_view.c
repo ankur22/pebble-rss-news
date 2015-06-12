@@ -14,7 +14,7 @@ static GBitmap *s_logo_bitmap;
 static StatusBarLayer *s_status_bar;
 #endif
 
-#define MAX_CELL_HEIGHT 60
+#define MAX_CELL_HEIGHT 95
 #define NUM_MENU_SECTIONS 1
 static int numMenuItems = 0;
 static int selectedMenuCell = 0;
@@ -28,8 +28,19 @@ static uint16_t menu_get_num_sections_callback(MenuLayer *menu_layer, void *data
   return NUM_MENU_SECTIONS;
 }
 
+static int16_t row_height(MenuIndex *cell_index) {
+    return (15 * strlen(_latest[cell_index->row]) / 24);
+}
+
 static int16_t wp_cell_height(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
-    return MAX_CELL_HEIGHT;
+  switch (cell_index->section) {
+    case 0:
+        if (numMenuItems > 0) {
+            return row_height(cell_index) + 40;
+        }
+    break;
+  }
+  return MAX_CELL_HEIGHT;
 }
 
 static uint16_t menu_get_num_rows_callback(MenuLayer *menu_layer, uint16_t section_index, void *data) {
@@ -55,12 +66,16 @@ static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuI
             } else {
                 graphics_context_set_text_color(ctx, GColorBlack);
             }
-            graphics_draw_text(ctx, _latest[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(5, 0, 139, MAX_CELL_HEIGHT), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+            graphics_draw_text(ctx, _latest[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(5, 0, 139, row_height(cell_index)), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
             //graphics_draw_bitmap_in_rect(ctx, s_logo_bitmap, GRect(2, 2, 50, 20));
-            graphics_context_set_text_color(ctx, GColorDarkGray);
-            //graphics_draw_text(ctx, _latestSource[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(5, 0, 139, MAX_CELL_HEIGHT), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
-            //graphics_context_set_text_color(ctx, GColorVividCerulean);
-            //graphics_draw_text(ctx, _latestCategory[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(5, 0, 139, MAX_CELL_HEIGHT), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+#ifdef PBL_SDK_3
+            graphics_context_set_text_color(ctx, GColorLightGray);
+#endif
+            graphics_draw_text(ctx, _latestSource[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(10, row_height(cell_index) + 5, 139, 10), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+#ifdef PBL_SDK_3
+            graphics_context_set_text_color(ctx, GColorVividCerulean);
+#endif
+            graphics_draw_text(ctx, _latestCategory[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(10, row_height(cell_index) + 20, 139, 10), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
         }
     break;
   }

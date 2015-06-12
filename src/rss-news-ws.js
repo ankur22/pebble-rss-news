@@ -19,8 +19,8 @@ Pebble.addEventListener('appmessage',
               break;
           default:
             if (e.payload['0'] !== null) {
-                console.log('READING_LIST request received: ' + e.payload['0']);
-                addToReadingList(e.payload['0']);
+                console.log('READING_LIST request received: ' + e.payload.MESSAGE_TYPE);
+                addToReadingList(e.payload.MESSAGE_TYPE);
             } else {
                 console.log('Unexpected key received');
             }
@@ -42,15 +42,15 @@ function addToReadingList(url) {
       //var obj = {};
       //obj.READING_LIST = req.responseText.username;
       //sendPebbleResponseFromRssNews(obj);
-      Pebble.showSimpleNotificationOnPebble("Reading List Updated", "Go to rss-news.appspot.com/pebble/" + JSON.parse(req.responseText).username);
+      Pebble.showSimpleNotificationOnPebble("Reading List Updated", "Go to rss-news.appspot.com/0/pebble/readingList/" + JSON.parse(req.responseText).username);
     } else {
       console.log('Error: ' + req.status + ' ' + JSON.stringify(req.responseText));
       //obj.ERROR = req.status.toString();
       //sendPebbleResponseFromRssNews(obj);
       if(req.status == 409) {
-          Pebble.showSimpleNotificationOnPebble("Reading List Conflict", "Go to rss-news.appspot.com/pebble/" + JSON.parse(req.responseText).username);
+          Pebble.showSimpleNotificationOnPebble("Already Saved In Reading List", "Go to rss-news.appspot.com/0/pebble/readingList/" + JSON.parse(req.responseText).username);
       } else {
-          Pebble.showSimpleNotificationOnPebble("Reading List Error", "Go to rss-news.appspot.com/pebble/" + JSON.parse(req.responseText).username);
+          Pebble.showSimpleNotificationOnPebble("Reading List Error", "Go to rss-news.appspot.com/0/pebble/readingList/" + JSON.parse(req.responseText).username);
       }
     }
   };

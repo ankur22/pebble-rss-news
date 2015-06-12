@@ -10,7 +10,7 @@ static StatusBarLayer *s_status_bar;
 #endif
 
 #define NUM_MENU_SECTIONS 1
-#define NUM_MENU_ITEMS 3
+#define NUM_MENU_ITEMS 2
 
 static char* _top;
 static char* _latest;
@@ -54,9 +54,9 @@ static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuI
         case 1:
           menu_cell_basic_draw(ctx, cell_layer, "Top", "Popular news", NULL);
           break;
-        case 2:
+        /*case 2:
           menu_cell_basic_draw(ctx, cell_layer, "Categories", "All categories", NULL);
-          break;
+          break;*/
       }
       break;
   }
@@ -65,7 +65,7 @@ static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuI
 static int split_string(char *fullString, char **array, char **arrayUrl, char **arraySource, char **arrayCategory) {
   int num = 0;
   char *p;
-  if (strlen(fullString) > 0) {
+  if (fullString != NULL && strlen(fullString) > 0) {
     p = strtok(fullString,"|");
     while(p != NULL) {
       array[num] = p;
@@ -95,9 +95,9 @@ static void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, v
       APP_LOG(APP_LOG_LEVEL_DEBUG, "Selected Top");
       show_latest_view(_topArray, _topArrayUrl, _topArraySource, _topArrayCategory, _numTopItems);
       break;
-    case 2:
+    /*case 2:
       APP_LOG(APP_LOG_LEVEL_DEBUG, "Selected Categories");
-      break;
+      break;*/
   }
 }
 
