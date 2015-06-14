@@ -34,7 +34,7 @@ Pebble.addEventListener('appmessage',
 
 function addToReadingList(url) {
   var req = new XMLHttpRequest();
-  req.open('POST', 'https://rss-news.appspot.com/0/pebble/readingList?url=' + encodeURIComponent(url), true);
+  req.open('POST', 'https://rss-news.appspot.com/0/pebble/readingList?uid=' + encodeURIComponent(url), true);
   req.setRequestHeader('PebbleAccountToken', Pebble.getAccountToken());
   req.onload = function(e) {
     if(req.status == 200) {
@@ -42,15 +42,15 @@ function addToReadingList(url) {
       //var obj = {};
       //obj.READING_LIST = req.responseText.username;
       //sendPebbleResponseFromRssNews(obj);
-      Pebble.showSimpleNotificationOnPebble("Reading List Updated", "Go to rss-news.appspot.com/0/pebble/readingList/" + JSON.parse(req.responseText).username);
+      Pebble.showSimpleNotificationOnPebble("Reading List Updated", "Go to rss-news.appspot.com/pebble/" + JSON.parse(req.responseText).username);
     } else {
       console.log('Error: ' + req.status + ' ' + JSON.stringify(req.responseText));
       //obj.ERROR = req.status.toString();
       //sendPebbleResponseFromRssNews(obj);
       if(req.status == 409) {
-          Pebble.showSimpleNotificationOnPebble("Already Saved In Reading List", "Go to rss-news.appspot.com/0/pebble/readingList/" + JSON.parse(req.responseText).username);
+          Pebble.showSimpleNotificationOnPebble("Already Saved In Reading List", "Go to rss-news.appspot.com/pebble/" + JSON.parse(req.responseText).username);
       } else {
-          Pebble.showSimpleNotificationOnPebble("Reading List Error", "Go to rss-news.appspot.com/0/pebble/readingList/" + JSON.parse(req.responseText).username);
+          Pebble.showSimpleNotificationOnPebble("Reading List Error", "Go to rss-news.appspot.com/pebble/" + JSON.parse(req.responseText).username);
       }
     }
   };
@@ -67,15 +67,21 @@ function getDataForPebble(key, path) {
       var response = JSON.parse(req.responseText);
       if (response.latest !== undefined) {
         console.log('latest lmd: ' + response.latest.lmd);
-        obj.GET_LATEST = response.latest.content;
+        if (response.latest.content.length > 0) {
+            obj.GET_LATEST = response.latest.content;
+        }
       }
       if (response.top !== undefined) {
         console.log('top lmd: ' + response.top.lmd);
-        obj.GET_TOP = response.top.content;
+        if (response.top.content.length > 0) {
+            obj.GET_TOP = response.top.content;
+        }
       }
       if (response.categories !== undefined) {
         console.log('categories lmd: ' + response.categories.lmd);
-        obj.GET_CATEGORIES = response.categories.content;
+        if (response.categories.content.length > 0) {
+            obj.GET_CATEGORIES = response.categories.content;
+        }
       }
       obj.ALL = 'all done';
       sendPebbleResponseFromRssNews(obj);
