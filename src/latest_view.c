@@ -5,7 +5,7 @@
 #define MESSAGE_TYPE 0
 #define READING_LIST 7
 #define LINE_HEIGHT 15
-#define NUM_CHARS_IN_LINE 24
+#define NUM_CHARS_IN_LINE 28
 
 static Window *s_window;
 static MenuLayer *s_menu_layer;
@@ -131,6 +131,7 @@ static void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, v
       if (numMenuItems > 0) {
         do_post(_latestUrl[cell_index->row]);
         APP_LOG(APP_LOG_LEVEL_DEBUG, _latestUrl[cell_index->row]);
+        light_enable_interaction();
       }
     break;
   }
@@ -148,6 +149,7 @@ static void menu_selection_changed(struct MenuLayer *menu_layer, MenuIndex new_i
   switch (new_index.section) {
     case 0:
       selectedMenuCell = new_index.row;
+      light_enable_interaction();
       break;
   }
 }

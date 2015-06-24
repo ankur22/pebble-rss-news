@@ -90,10 +90,12 @@ static void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, v
     case 0:
       APP_LOG(APP_LOG_LEVEL_DEBUG, "Selected Latest");
       show_latest_view(_latestArray, _latestArrayUrl, _latestArraySource, _latestArrayCategory, _numLatestItems);
+      light_enable_interaction();
       break;
     case 1:
       APP_LOG(APP_LOG_LEVEL_DEBUG, "Selected Top");
       show_latest_view(_topArray, _topArrayUrl, _topArraySource, _topArrayCategory, _numTopItems);
+      light_enable_interaction();
       break;
     /*case 2:
       APP_LOG(APP_LOG_LEVEL_DEBUG, "Selected Categories");

@@ -16,9 +16,11 @@ static Window *s_window;
 static GFont s_res_droid_serif_28_bold;
 static TextLayer *s_textlayer_1;
 
+#ifdef PBL_SDK_3
 static GBitmapSequence *s_sequence;
 static GBitmap *s_bitmap;
 static BitmapLayer *s_bitmap_layer;
+#endif
 
 static char* _top;
 static char* _latest;
@@ -27,7 +29,8 @@ static char* _latest;
 static StatusBarLayer *s_status_bar;
 #endif
 
-/*static void timer_handler(void *context) {
+#ifdef PBL_SDK_3
+static void timer_handler(void *context) {
   uint32_t next_delay;
 
   // Advance to the next APNG frame
@@ -41,7 +44,8 @@ static StatusBarLayer *s_status_bar;
     // Start again
     gbitmap_sequence_restart(s_sequence);
   }
-}*/
+}
+#endif
 
 static void initialise_ui(void) {
   s_window = window_create();
@@ -52,13 +56,14 @@ static void initialise_ui(void) {
   
   s_res_droid_serif_28_bold = fonts_get_system_font(FONT_KEY_DROID_SERIF_28_BOLD);
   // s_textlayer_1
-  s_textlayer_1 = text_layer_create(GRect(0, 62, 144, 37));
+  s_textlayer_1 = text_layer_create(GRect(0, 32, 144, 37));
   text_layer_set_text(s_textlayer_1, "rss-news");
   text_layer_set_text_alignment(s_textlayer_1, GTextAlignmentCenter);
   text_layer_set_font(s_textlayer_1, s_res_droid_serif_28_bold);
   layer_add_child(window_layer, (Layer *)s_textlayer_1);
   
-  /*s_bitmap_layer = bitmap_layer_create(bounds);
+#ifdef PBL_SDK_3
+  s_bitmap_layer = bitmap_layer_create(GRect(37, 72, 64, 64));
   layer_add_child(window_layer, bitmap_layer_get_layer(s_bitmap_layer));
 
   // Create sequence
@@ -66,9 +71,8 @@ static void initialise_ui(void) {
   // Create GBitmap
   s_bitmap = gbitmap_create_blank(gbitmap_sequence_get_bitmap_size(s_sequence), GBitmapFormat8Bit);
   // Begin animation
-  app_timer_register(1, timer_handler, NULL);*/
+  app_timer_register(1, timer_handler, NULL);
 
-#ifdef PBL_SDK_3
   // Set up the status bar last to ensure it is on top of other Layers
   s_status_bar = status_bar_layer_create();
   layer_add_child(window_layer, status_bar_layer_get_layer(s_status_bar));
@@ -78,7 +82,8 @@ static void initialise_ui(void) {
 static void destroy_ui(void) {
   window_destroy(s_window);
   text_layer_destroy(s_textlayer_1);
-  /*if(s_bitmap) {
+#ifdef PBL_SDK_3
+  if(s_bitmap) {
     gbitmap_destroy(s_bitmap);
     s_bitmap = NULL;
   }
@@ -86,7 +91,8 @@ static void destroy_ui(void) {
     gbitmap_sequence_destroy(s_sequence);
     s_sequence = NULL;
   }
-  bitmap_layer_destroy(s_bitmap_layer);*/
+  bitmap_layer_destroy(s_bitmap_layer);
+#endif
 }
 // END AUTO-GENERATED UI CODE
 
