@@ -39,9 +39,10 @@ static int16_t num_lines(MenuIndex *cell_index) {
     for (int i = 0; i < length; ++i) {
         count += 1;
         word += 1;
-        if (fullLine[i] == " ") {
-            word = 0;
-        }
+        APP_LOG(APP_LOG_LEVEL_DEBUG, &fullLine[i]);
+        //if (&fullLine[i] == " ") {
+        //    word = 0;
+        //}
         if (count > NUM_CHARS_IN_LINE) {
             i -= word;
             num_lines += 1;

@@ -6,8 +6,8 @@
         "GET_LATEST": 1,
         "GET_TOP": 2,
         "HELLO": 5,
-        "READING_LIST": 7,
-        "MESSAGE_TYPE": 0
+        "MESSAGE_TYPE": 0,
+        "READING_LIST": 7
     },
     "capabilities": [
         ""
@@ -18,14 +18,14 @@
     "resources": {
         "media": [
             {
-                "file": "images/rss-news.png",
-                "menuIcon": true,
-                "name": "RSS_NEWS_MENU_LOGO",
+                "file": "images/bbc.png",
+                "name": "BBC_LOGO",
                 "type": "png"
             },
             {
-                "file": "images/bbc.png",
-                "name": "BBC_LOGO",
+                "file": "images/rss-news.png",
+                "menuIcon": true,
+                "name": "RSS_NEWS_MENU_LOGO",
                 "type": "png"
             }
         ]
