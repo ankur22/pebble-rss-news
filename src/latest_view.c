@@ -4,6 +4,8 @@
 
 #define MESSAGE_TYPE 0
 #define READING_LIST 7
+#define LINE_HEIGHT 15
+#define NUM_CHARS_IN_LINE 24
 
 static Window *s_window;
 static MenuLayer *s_menu_layer;
@@ -28,8 +30,28 @@ static uint16_t menu_get_num_sections_callback(MenuLayer *menu_layer, void *data
   return NUM_MENU_SECTIONS;
 }
 
+static int16_t num_lines(MenuIndex *cell_index) {
+    char* fullLine = _latest[cell_index->row];
+    int length = strlen(fullLine);
+    int num_lines = 0;
+    int count = 0;
+    int word = 0;
+    for (int i = 0; i < length; ++i) {
+        count += 1;
+        word += 1;
+        if (fullLine[i] == " ") {
+            word = 0;
+        }
+        if (count > NUM_CHARS_IN_LINE) {
+            i -= word;
+            num_lines += 1;
+        }
+    }
+    return num_lines;
+}
+
 static int16_t row_height(MenuIndex *cell_index) {
-    return (15 * strlen(_latest[cell_index->row]) / 24);
+    return LINE_HEIGHT * num_lines(cell_index);
 }
 
 static int16_t wp_cell_height(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
