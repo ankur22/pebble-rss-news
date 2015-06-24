@@ -16,12 +16,32 @@ static Window *s_window;
 static GFont s_res_droid_serif_28_bold;
 static TextLayer *s_textlayer_1;
 
+static GBitmapSequence *s_sequence;
+static GBitmap *s_bitmap;
+static BitmapLayer *s_bitmap_layer;
+
 static char* _top;
 static char* _latest;
 
 #ifdef PBL_SDK_3
 static StatusBarLayer *s_status_bar;
 #endif
+
+/*static void timer_handler(void *context) {
+  uint32_t next_delay;
+
+  // Advance to the next APNG frame
+  if(gbitmap_sequence_update_bitmap_next_frame(s_sequence, s_bitmap, &next_delay)) {
+    bitmap_layer_set_bitmap(s_bitmap_layer, s_bitmap);
+    layer_mark_dirty(bitmap_layer_get_layer(s_bitmap_layer));
+
+    // Timer for that delay
+    app_timer_register(next_delay, timer_handler, NULL);
+  } else {
+    // Start again
+    gbitmap_sequence_restart(s_sequence);
+  }
+}*/
 
 static void initialise_ui(void) {
   s_window = window_create();
@@ -38,6 +58,16 @@ static void initialise_ui(void) {
   text_layer_set_font(s_textlayer_1, s_res_droid_serif_28_bold);
   layer_add_child(window_layer, (Layer *)s_textlayer_1);
   
+  /*s_bitmap_layer = bitmap_layer_create(bounds);
+  layer_add_child(window_layer, bitmap_layer_get_layer(s_bitmap_layer));
+
+  // Create sequence
+  s_sequence = gbitmap_sequence_create_with_resource(RESOURCE_ID_LOADING_ANIMATION);
+  // Create GBitmap
+  s_bitmap = gbitmap_create_blank(gbitmap_sequence_get_bitmap_size(s_sequence), GBitmapFormat8Bit);
+  // Begin animation
+  app_timer_register(1, timer_handler, NULL);*/
+
 #ifdef PBL_SDK_3
   // Set up the status bar last to ensure it is on top of other Layers
   s_status_bar = status_bar_layer_create();
@@ -48,6 +78,15 @@ static void initialise_ui(void) {
 static void destroy_ui(void) {
   window_destroy(s_window);
   text_layer_destroy(s_textlayer_1);
+  /*if(s_bitmap) {
+    gbitmap_destroy(s_bitmap);
+    s_bitmap = NULL;
+  }
+  if(s_sequence) {
+    gbitmap_sequence_destroy(s_sequence);
+    s_sequence = NULL;
+  }
+  bitmap_layer_destroy(s_bitmap_layer);*/
 }
 // END AUTO-GENERATED UI CODE
 

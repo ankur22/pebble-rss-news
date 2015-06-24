@@ -18,9 +18,9 @@
     "resources": {
         "media": [
             {
-                "file": "images/bbc.png",
-                "name": "BBC_LOGO",
-                "type": "png"
+                "type":"raw",
+                "name":"LOADING_ANIMATION",
+                "file":"images/loading.png"
             },
             {
                 "file": "images/rss-news.png",

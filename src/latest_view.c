@@ -37,14 +37,16 @@ static int16_t num_lines(MenuIndex *cell_index) {
     int count = 0;
     int word = 0;
     for (int i = 0; i < length; ++i) {
+        char* character = &fullLine[i];
         count += 1;
         word += 1;
-        APP_LOG(APP_LOG_LEVEL_DEBUG, &fullLine[i]);
-        //if (&fullLine[i] == " ") {
-        //    word = 0;
-        //}
+        if (*character == ' ') {
+            word = 0;
+        }
         if (count > NUM_CHARS_IN_LINE) {
             i -= word;
+            word = 0;
+            count = 0;
             num_lines += 1;
         }
     }
@@ -59,7 +61,7 @@ static int16_t wp_cell_height(struct MenuLayer *menu_layer, MenuIndex *cell_inde
   switch (cell_index->section) {
     case 0:
         if (numMenuItems > 0) {
-            return row_height(cell_index) + 40;
+            return row_height(cell_index) + 50;
         }
     break;
   }
@@ -94,11 +96,11 @@ static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuI
 #ifdef PBL_SDK_3
             graphics_context_set_text_color(ctx, GColorLightGray);
 #endif
-            graphics_draw_text(ctx, _latestSource[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(10, row_height(cell_index) + 5, 139, 10), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+            graphics_draw_text(ctx, _latestSource[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(10, row_height(cell_index) + 15, 139, 10), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
 #ifdef PBL_SDK_3
             graphics_context_set_text_color(ctx, GColorVividCerulean);
 #endif
-            graphics_draw_text(ctx, _latestCategory[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(10, row_height(cell_index) + 20, 139, 10), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+            graphics_draw_text(ctx, _latestCategory[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(10, row_height(cell_index) + 30, 139, 10), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
         }
     break;
   }
