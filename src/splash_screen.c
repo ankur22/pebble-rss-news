@@ -17,6 +17,8 @@ static GFont s_res_droid_serif_28_bold;
 static TextLayer *s_textlayer_1;
 
 #ifdef PBL_SDK_3
+static StatusBarLayer *s_status_bar;
+
 static GBitmapSequence *s_sequence;
 static GBitmap *s_bitmap;
 static BitmapLayer *s_bitmap_layer;
@@ -24,10 +26,6 @@ static BitmapLayer *s_bitmap_layer;
 
 static char* _top;
 static char* _latest;
-
-#ifdef PBL_SDK_3
-static StatusBarLayer *s_status_bar;
-#endif
 
 #ifdef PBL_SDK_3
 static void timer_handler(void *context) {

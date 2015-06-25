@@ -32,6 +32,12 @@ Pebble.addEventListener('appmessage',
   }
 );
 
+function sendFinishedReadingListStuff() {
+  var obj = {};
+  obj.SAVED_READING_LIST = '';
+  sendPebbleResponseFromRssNews(obj);
+}
+
 function addToReadingList(url) {
   var req = new XMLHttpRequest();
   req.open('POST', 'https://rss-news.appspot.com/0/pebble/readingList?uid=' + encodeURIComponent(url), true);
@@ -39,18 +45,16 @@ function addToReadingList(url) {
   req.onload = function(e) {
     if(req.status == 200) {
       console.log('Success: ' + JSON.stringify(req.responseText));
-      //var obj = {};
-      //obj.READING_LIST = req.responseText.username;
-      //sendPebbleResponseFromRssNews(obj);
       Pebble.showSimpleNotificationOnPebble("Reading List Updated", "Go to rss-news.appspot.com/pebble/" + JSON.parse(req.responseText).username);
+      sendFinishedReadingListStuff();
     } else {
       console.log('Error: ' + req.status + ' ' + JSON.stringify(req.responseText));
-      //obj.ERROR = req.status.toString();
-      //sendPebbleResponseFromRssNews(obj);
       if(req.status == 409) {
           Pebble.showSimpleNotificationOnPebble("Already Saved In Reading List", "Go to rss-news.appspot.com/pebble/" + JSON.parse(req.responseText).username);
+          sendFinishedReadingListStuff();
       } else {
           Pebble.showSimpleNotificationOnPebble("Reading List Error", "Go to rss-news.appspot.com/pebble/" + JSON.parse(req.responseText).username);
+          sendFinishedReadingListStuff();
       }
     }
   };

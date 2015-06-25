@@ -7,7 +7,8 @@
         "GET_TOP": 2,
         "HELLO": 5,
         "MESSAGE_TYPE": 0,
-        "READING_LIST": 7
+        "READING_LIST": 7,
+        "SAVED_READING_LIST": 8
     },
     "capabilities": [
         ""
