@@ -159,13 +159,16 @@ void show_main_menu(char* top, char* latest) {
   _numLatestItems = split_string(_latest, _latestArray, _latestArrayUrl, _latestArraySource, _latestArrayCategory);
   _numTopItems = split_string(_top, _topArray, _topArrayUrl, _topArraySource, _topArrayCategory);
 
-  initialise_ui();
+  show_latest_view(_latestArray, _latestArrayUrl, _latestArraySource, _latestArrayCategory, _numLatestItems);
+  light_enable_interaction();
+
+  /*initialise_ui();
   window_set_window_handlers(s_window, (WindowHandlers) {
     .unload = handle_window_unload,
   });
   window_stack_push(s_window, true);
   
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "Main menu added to window stack");
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "Main menu added to window stack");*/
 }
 
 void hide_main_menu(void) {

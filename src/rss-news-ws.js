@@ -91,7 +91,7 @@ function getDataForPebble(key, path) {
       sendPebbleResponseFromRssNews(obj);
     } else {
       console.log('Error: ' + req.status);
-      obj.ERROR = req.status.toString();
+      obj.ERROR = String(req.status);
       sendPebbleResponseFromRssNews(obj);
     }
   };
