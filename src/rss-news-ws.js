@@ -75,7 +75,7 @@ function getDataForPebble(key, path) {
             obj.GET_LATEST = response.latest.content;
         }
       }
-      if (response.top !== undefined) {
+      /*if (response.top !== undefined) {
         console.log('top lmd: ' + response.top.lmd);
         if (response.top.content.length > 0) {
             obj.GET_TOP = response.top.content;
@@ -86,12 +86,12 @@ function getDataForPebble(key, path) {
         if (response.categories.content.length > 0) {
             obj.GET_CATEGORIES = response.categories.content;
         }
-      }
+      }*/
       obj.ALL = 'all done';
       sendPebbleResponseFromRssNews(obj);
     } else {
       console.log('Error: ' + req.status);
-      obj.ERROR = String(req.status);
+      obj.ERROR = String('Error');
       sendPebbleResponseFromRssNews(obj);
     }
   };

@@ -321,7 +321,7 @@ static void initialise_ui(void) {
 
   s_res_droid_serif_28_bold = fonts_get_system_font(FONT_KEY_GOTHIC_14);
   s_textlayer_1 = text_layer_create(GRect(0, 52, 144, 27));
-  text_layer_set_text(s_textlayer_1, "No Connection...");
+  text_layer_set_text(s_textlayer_1, "Currently unavailable");
   text_layer_set_text_alignment(s_textlayer_1, GTextAlignmentCenter);
   text_layer_set_font(s_textlayer_1, s_res_droid_serif_28_bold);
   layer_insert_above_sibling((Layer *)s_textlayer_1, (Layer *)s_menu_layer);

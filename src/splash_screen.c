@@ -16,6 +16,9 @@ static Window *s_window;
 static GFont s_res_droid_serif_28_bold;
 static TextLayer *s_textlayer_1;
 
+static GFont s_res_gothic_14;
+static TextLayer *s_textlayer_2;
+
 #ifdef PBL_SDK_3
 static StatusBarLayer *s_status_bar;
 
@@ -45,6 +48,17 @@ static void timer_handler(void *context) {
 }
 #endif
 
+static void show_no_con_error() {
+    layer_set_hidden((Layer *)s_textlayer_2, false);
+#ifdef PBL_SDK_3
+    layer_set_hidden((Layer *)s_bitmap_layer, true);
+#endif
+}
+
+static void hide_no_con_error() {
+    layer_set_hidden((Layer *)s_textlayer_2, true);
+}
+
 static void initialise_ui(void) {
   s_window = window_create();
 #ifndef PBL_SDK_3
@@ -59,6 +73,14 @@ static void initialise_ui(void) {
   text_layer_set_text_alignment(s_textlayer_1, GTextAlignmentCenter);
   text_layer_set_font(s_textlayer_1, s_res_droid_serif_28_bold);
   layer_add_child(window_layer, (Layer *)s_textlayer_1);
+
+  s_res_gothic_14 = fonts_get_system_font(FONT_KEY_GOTHIC_14);
+  s_textlayer_2 = text_layer_create(GRect(0, 95, 144, 27));
+  text_layer_set_text(s_textlayer_2, "Currently unavailable");
+  text_layer_set_text_alignment(s_textlayer_2, GTextAlignmentCenter);
+  text_layer_set_font(s_textlayer_2, s_res_gothic_14);
+  layer_add_child(window_layer, (Layer *)s_textlayer_2);
+  hide_no_con_error();
   
 #ifdef PBL_SDK_3
   s_bitmap_layer = bitmap_layer_create(GRect(37, 72, 64, 64));
@@ -80,6 +102,7 @@ static void initialise_ui(void) {
 static void destroy_ui(void) {
   window_destroy(s_window);
   text_layer_destroy(s_textlayer_1);
+  text_layer_destroy(s_textlayer_2);
 #ifdef PBL_SDK_3
   if(s_bitmap) {
     gbitmap_destroy(s_bitmap);
@@ -157,6 +180,7 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
       case ERROR:
         snprintf(s_buffer, sizeof(s_buffer), "ERROR Received '%s'", t->value->cstring);
         APP_LOG(APP_LOG_LEVEL_ERROR, s_buffer);
+        show_no_con_error();
         break;
       default:
         snprintf(s_buffer, sizeof(s_buffer), "Unidentified Received '%s'", t->value->cstring);
