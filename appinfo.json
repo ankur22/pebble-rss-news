@@ -19,15 +19,15 @@
     "resources": {
         "media": [
             {
-                "type":"raw",
-                "name":"LOADING_ANIMATION",
-                "file":"images/loading.png"
-            },
-            {
                 "file": "images/rss-news.png",
                 "menuIcon": true,
                 "name": "RSS_NEWS_MENU_LOGO",
                 "type": "png"
+            },
+            {
+                "file": "data/loading.png",
+                "name": "LOADING_ANIMATION",
+                "type": "raw"
             }
         ]
     },

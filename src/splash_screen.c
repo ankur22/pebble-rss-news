@@ -11,7 +11,6 @@
 #define ERROR 6
 #define READING_LIST 7
 
-// BEGIN AUTO-GENERATED UI CODE; DO NOT MODIFY
 static Window *s_window;
 static GFont s_res_droid_serif_28_bold;
 static TextLayer *s_textlayer_1;
@@ -25,6 +24,8 @@ static StatusBarLayer *s_status_bar;
 static GBitmapSequence *s_sequence;
 static GBitmap *s_bitmap;
 static BitmapLayer *s_bitmap_layer;
+#else
+static TextLayer *s_textlayer_loading;
 #endif
 
 static char* _top;
@@ -52,6 +53,8 @@ static void show_no_con_error() {
     layer_set_hidden((Layer *)s_textlayer_2, false);
 #ifdef PBL_SDK_3
     layer_set_hidden((Layer *)s_bitmap_layer, true);
+#else
+    layer_set_hidden((Layer *)s_textlayer_loading, true);
 #endif
 }
 
@@ -96,6 +99,12 @@ static void initialise_ui(void) {
   // Set up the status bar last to ensure it is on top of other Layers
   s_status_bar = status_bar_layer_create();
   layer_add_child(window_layer, status_bar_layer_get_layer(s_status_bar));
+#else
+  s_textlayer_loading = text_layer_create(GRect(0, 95, 144, 27));
+  text_layer_set_text(s_textlayer_loading, "Loading...");
+  text_layer_set_text_alignment(s_textlayer_loading, GTextAlignmentCenter);
+  text_layer_set_font(s_textlayer_loading, s_res_gothic_14);
+  layer_add_child(window_layer, (Layer *)s_textlayer_loading);
 #endif
 }
 
@@ -113,9 +122,10 @@ static void destroy_ui(void) {
     s_sequence = NULL;
   }
   bitmap_layer_destroy(s_bitmap_layer);
+#else
+  text_layer_destroy(s_textlayer_loading);
 #endif
 }
-// END AUTO-GENERATED UI CODE
 
 static void handle_window_unload(Window* window) {
   destroy_ui();
