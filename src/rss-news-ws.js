@@ -38,10 +38,29 @@ function sendFinishedReadingListStuff() {
   sendPebbleResponseFromRssNews(obj);
 }
 
+function getWatchType() {
+    var current_watch;
+    if(Pebble.getActiveWatchInfo) {
+      try {
+        current_watch = Pebble.getActiveWatchInfo();
+      } catch(err) {
+        current_watch = {
+          platform: "basalt",
+        };
+      }
+    } else {
+      current_watch = {
+        platform: "aplite",
+      };
+    }
+    return current_watch;
+}
+
 function addToReadingList(url) {
   var req = new XMLHttpRequest();
   req.open('POST', 'https://rss-news.appspot.com/0/pebble/readingList?uid=' + encodeURIComponent(url), true);
   req.setRequestHeader('PebbleAccountToken', Pebble.getAccountToken());
+  req.setRequestHeader('PebbleWatchType', getWatchType().platform);
   req.onload = function(e) {
     if(req.status == 200) {
       console.log('Success: ' + JSON.stringify(req.responseText));
@@ -64,6 +83,8 @@ function addToReadingList(url) {
 function getDataForPebble(key, path) {
   var req = new XMLHttpRequest();
   req.open('GET', 'https://rss-news.appspot.com/0/pebble/' + path, true);
+  req.setRequestHeader('PebbleAccountToken', Pebble.getAccountToken());
+  req.setRequestHeader('PebbleWatchType', getWatchType().platform);
   req.onload = function(e) {
     console.log('Received a response for MESSAGE_TYPE ' + key);
     if(req.status == 200) {
@@ -104,7 +125,7 @@ function sendPebbleResponseFromRssNews(response) {
       console.log('Successfully delivered message with transactionId=' + e.data.transactionId);
     },
     function(e) {
-      console.log('Unable to deliver message with transactionId=' + e.data.transactionId + ' Error is: ' + e.data.error);
+      console.log('Unable to deliver message with transactionId=' + e.data.transactionId + ' Error is: ' + JSON.stringify(e.data.error));
     }
   );
 }

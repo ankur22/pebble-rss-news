@@ -202,6 +202,11 @@ static void destroy_ui(void) {
   window_destroy(s_window);
   menu_layer_destroy(s_menu_layer);
   text_layer_destroy(s_textlayer_1);
+  free(_latest);
+  free(_latestUrl);
+  free(_latestSource);
+  free(_latestCategory);
+
 #ifdef PBL_SDK_3
   if(s_bitmap) {
     gbitmap_destroy(s_bitmap);
