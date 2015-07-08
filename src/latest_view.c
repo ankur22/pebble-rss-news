@@ -123,6 +123,8 @@ static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuI
             graphics_draw_text(ctx, _latest[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(5, 0, 139, row_height(cell_index)), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
 #ifdef PBL_SDK_3
             graphics_context_set_text_color(ctx, GColorLightGray);
+#else
+            graphics_context_set_text_color(ctx, GColorWhite);
 #endif
             graphics_draw_text(ctx, _latestSource[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(10, row_height(cell_index) + 15, 139, 10), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
 #ifdef PBL_SDK_3

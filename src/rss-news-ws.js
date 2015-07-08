@@ -1,3 +1,5 @@
+var APP_VERSION = "1.1";
+
 Pebble.addEventListener('ready',
   function(e) {
     console.log('JavaScript app ready and running!');
@@ -61,6 +63,7 @@ function addToReadingList(url) {
   req.open('POST', 'https://rss-news.appspot.com/0/pebble/readingList?uid=' + encodeURIComponent(url), true);
   req.setRequestHeader('PebbleAccountToken', Pebble.getAccountToken());
   req.setRequestHeader('PebbleWatchType', getWatchType().platform);
+  req.setRequestHeader('AppVersion', APP_VERSION);
   req.onload = function(e) {
     if(req.status == 200) {
       console.log('Success: ' + JSON.stringify(req.responseText));
@@ -85,6 +88,7 @@ function getDataForPebble(key, path) {
   req.open('GET', 'https://rss-news.appspot.com/0/pebble/' + path, true);
   req.setRequestHeader('PebbleAccountToken', Pebble.getAccountToken());
   req.setRequestHeader('PebbleWatchType', getWatchType().platform);
+  req.setRequestHeader('AppVersion', APP_VERSION);
   req.onload = function(e) {
     console.log('Received a response for MESSAGE_TYPE ' + key);
     if(req.status == 200) {

@@ -76,8 +76,8 @@ static int split_string(char *fullString, char **array, char **arrayUrl, char **
       p = strtok(NULL, "|");
       arrayCategory[num] = p;
       p = strtok(NULL, "|");
-      APP_LOG(APP_LOG_LEVEL_DEBUG, array[num]);
-      APP_LOG(APP_LOG_LEVEL_DEBUG, arrayUrl[num]);
+      //APP_LOG(APP_LOG_LEVEL_DEBUG, array[num]);
+      //APP_LOG(APP_LOG_LEVEL_DEBUG, arrayUrl[num]);
       ++num;
     }
   }
