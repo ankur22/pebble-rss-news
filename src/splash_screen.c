@@ -10,6 +10,7 @@
 #define HELLO 5
 #define ERROR 6
 #define READING_LIST 7
+#define USERNAME 9
 
 static Window *s_window;
 static GFont s_res_droid_serif_28_bold;
@@ -30,6 +31,7 @@ static TextLayer *s_textlayer_loading;
 
 static char* _top;
 static char* _latest;
+static char* _username;
 
 #ifdef PBL_SDK_3
 static void timer_handler(void *context) {
@@ -191,6 +193,11 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
         snprintf(s_buffer, sizeof(s_buffer), "ERROR Received '%s'", t->value->cstring);
         APP_LOG(APP_LOG_LEVEL_ERROR, s_buffer);
         show_no_con_error();
+        break;
+      case USERNAME:
+        snprintf(s_buffer, sizeof(s_buffer), "USERNAME Received '%s'", t->value->cstring);
+        APP_LOG(APP_LOG_LEVEL_DEBUG, s_buffer);
+        _username = t->value->cstring;
         break;
       default:
         snprintf(s_buffer, sizeof(s_buffer), "Unidentified Received '%s'", t->value->cstring);

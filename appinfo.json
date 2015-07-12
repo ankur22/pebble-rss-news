@@ -8,10 +8,11 @@
         "HELLO": 5,
         "MESSAGE_TYPE": 0,
         "READING_LIST": 7,
-        "SAVED_READING_LIST": 8
+        "SAVED_READING_LIST": 8,
+        "USERNAME": 9
     },
     "capabilities": [
-        ""
+        "configurable"
     ],
     "companyName": "rss-news",
     "longName": "rss-news",
@@ -38,7 +39,7 @@
         "basalt"
     ],
     "uuid": "3a9f4e3d-3f01-446d-b8bf-b1d4da839d1f",
-    "versionLabel": "1.1",
+    "versionLabel": "1.2",
     "watchapp": {
         "watchface": false
     }

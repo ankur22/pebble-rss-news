@@ -6,7 +6,7 @@
 #define SAVED_READING_LIST 8
 #define READING_LIST 7
 #define LINE_HEIGHT 15
-#define NUM_CHARS_IN_LINE 28
+#define NUM_CHARS_IN_LINE 26
 
 static Window *s_window;
 static MenuLayer *s_menu_layer;
@@ -28,6 +28,7 @@ static char **_latest;
 static char **_latestUrl;
 static char **_latestSource;
 static char **_latestCategory;
+static char **_username;
 
 static GFont s_res_droid_serif_28_bold;
 static TextLayer *s_textlayer_1;
@@ -174,6 +175,7 @@ static void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, v
       if (numMenuItems > 0) {
         do_post(_latestUrl[cell_index->row]);
         APP_LOG(APP_LOG_LEVEL_DEBUG, _latestUrl[cell_index->row]);
+        APP_LOG(APP_LOG_LEVEL_DEBUG, _latest[cell_index->row]);
         light_enable_interaction();
 #ifdef PBL_SDK_3
             show_animation();
