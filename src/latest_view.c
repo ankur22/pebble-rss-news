@@ -6,7 +6,7 @@
 #define SAVED_READING_LIST 8
 #define READING_LIST 7
 #define LINE_HEIGHT 15
-#define NUM_CHARS_IN_LINE 26
+#define NUM_CHARS_IN_LINE 28
 
 static Window *s_window;
 static MenuLayer *s_menu_layer;
@@ -80,6 +80,10 @@ static int16_t num_lines(MenuIndex *cell_index) {
             num_lines += 1;
         }
     }
+    if (num_lines == 0 && length > 0) {
+        num_lines = 1;
+    }
+
     return num_lines;
 }
 
