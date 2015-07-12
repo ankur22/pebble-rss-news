@@ -15,7 +15,9 @@ Pebble.addEventListener('ready',
 Pebble.addEventListener('showConfiguration',
   function(e) {
     var username = localStorage.getItem(USERNAME_KEY);
-    var fullUrl = "https://" + BASE_READINGLIST_URL + username + "?from=config";
+    pebbleWatchType = '&pebbleWatchType=' + getWatchType().platform;
+    appVersion = '&appVersion=' + APP_VERSION;
+    var fullUrl = "https://" + BASE_READINGLIST_URL + username + "?from=config" + appVersion + pebbleWatchType;
     console.log(fullUrl);
     Pebble.openURL(fullUrl);
 });
