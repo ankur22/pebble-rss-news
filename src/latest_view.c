@@ -11,7 +11,7 @@
 static Window *s_window;
 static MenuLayer *s_menu_layer;
 
-#ifdef PBL_SDK_3
+#ifdef PBL_PLATFORM_BASALT
 static StatusBarLayer *s_status_bar;
 
 static GBitmapSequence *s_sequence;
@@ -23,6 +23,7 @@ static BitmapLayer *s_bitmap_layer;
 #define NUM_MENU_SECTIONS 1
 static int numMenuItems = 0;
 static int selectedMenuCell = 0;
+static int selectedMenuCellSubAdd = 1;
 
 static char **_latest;
 static char **_latestUrl;
@@ -32,16 +33,23 @@ static char **_username;
 
 static GFont s_res_droid_serif_28_bold;
 static TextLayer *s_textlayer_1;
+static TextLayer *s_textlayer_2;
 
-#ifdef PBL_SDK_3
 static void show_animation() {
+#ifdef PBL_PLATFORM_BASALT
     layer_set_hidden((Layer *)s_bitmap_layer, false);
+#else
+    layer_set_hidden((Layer *)s_textlayer_2, false);
+#endif
 }
 
 static void hide_animation() {
+#ifdef PBL_PLATFORM_BASALT
     layer_set_hidden((Layer *)s_bitmap_layer, true);
-}
+#else
+    layer_set_hidden((Layer *)s_textlayer_2, true);
 #endif
+}
 
 static void show_no_con_error() {
     layer_set_hidden((Layer *)s_textlayer_1, false);
@@ -115,27 +123,45 @@ static int16_t menu_get_header_height_callback(MenuLayer *menu_layer, uint16_t s
   return MENU_CELL_BASIC_HEADER_HEIGHT;
 }
 
+#ifdef PBL_PLATFORM_BASALT
+static void menu_draw_row_callback_basalt(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
+    //menu_cell_basic_draw(ctx, cell_layer, NULL, _latest[cell_index->row], NULL);
+    if (selectedMenuCell == cell_index->row) {
+        graphics_context_set_text_color(ctx, GColorWhite);
+    } else {
+        graphics_context_set_text_color(ctx, GColorBlack);
+    }
+    graphics_draw_text(ctx, _latest[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(5, 0, 139, row_height(cell_index)), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+
+    graphics_context_set_text_color(ctx, GColorLightGray);
+    graphics_draw_text(ctx, _latestSource[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(10, row_height(cell_index) + 15, 139, 10), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+
+    graphics_context_set_text_color(ctx, GColorVividCerulean);
+    graphics_draw_text(ctx, _latestCategory[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(10, row_height(cell_index) + 30, 139, 10), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+}
+#else
+static void menu_draw_row_callback_aplite(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
+    //menu_cell_basic_draw(ctx, cell_layer, NULL, _latest[cell_index->row], NULL);
+    if (selectedMenuCell == cell_index->row+selectedMenuCellSubAdd) {
+        graphics_context_set_text_color(ctx, GColorWhite);
+    } else {
+        graphics_context_set_text_color(ctx, GColorBlack);
+    }
+    graphics_draw_text(ctx, _latest[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(5, 0, 139, row_height(cell_index)), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+    graphics_draw_text(ctx, _latestSource[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(10, row_height(cell_index) + 15, 139, 10), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+    graphics_draw_text(ctx, _latestCategory[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(10, row_height(cell_index) + 30, 139, 10), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+}
+#endif
+
 static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
   switch (cell_index->section) {
     case 0:
         if (numMenuItems > 0) {
-            //menu_cell_basic_draw(ctx, cell_layer, NULL, _latest[cell_index->row], NULL);
-            if (selectedMenuCell == cell_index->row) {
-                graphics_context_set_text_color(ctx, GColorWhite);
-            } else {
-                graphics_context_set_text_color(ctx, GColorBlack);
-            }
-            graphics_draw_text(ctx, _latest[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(5, 0, 139, row_height(cell_index)), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
-#ifdef PBL_SDK_3
-            graphics_context_set_text_color(ctx, GColorLightGray);
+#ifdef PBL_PLATFORM_BASALT
+            menu_draw_row_callback_basalt(ctx, cell_layer, cell_index, data);
 #else
-            graphics_context_set_text_color(ctx, GColorWhite);
+            menu_draw_row_callback_aplite(ctx, cell_layer, cell_index, data);
 #endif
-            graphics_draw_text(ctx, _latestSource[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(10, row_height(cell_index) + 15, 139, 10), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
-#ifdef PBL_SDK_3
-            graphics_context_set_text_color(ctx, GColorVividCerulean);
-#endif
-            graphics_draw_text(ctx, _latestCategory[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(10, row_height(cell_index) + 30, 139, 10), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
         }
     break;
   }
@@ -166,9 +192,7 @@ static void do_post(char *url) {
       app_message_outbox_send();
     } else {
       APP_LOG(APP_LOG_LEVEL_INFO, "Phone is not connected!");
-#ifdef PBL_SDK_3
       hide_animation();
-#endif
       show_no_con_error();
     }
 }
@@ -181,9 +205,7 @@ static void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, v
         APP_LOG(APP_LOG_LEVEL_DEBUG, _latestUrl[cell_index->row]);
         APP_LOG(APP_LOG_LEVEL_DEBUG, _latest[cell_index->row]);
         light_enable_interaction();
-#ifdef PBL_SDK_3
-            show_animation();
-#endif
+        show_animation();
       }
     break;
   }
@@ -200,7 +222,12 @@ static void menu_draw_header_callback(GContext* ctx, const Layer *cell_layer, ui
 static void menu_selection_changed(struct MenuLayer *menu_layer, MenuIndex new_index, MenuIndex old_index, void *callback_context) {
   switch (new_index.section) {
     case 0:
+#ifdef PBL_PLATFORM_BASALT
       selectedMenuCell = new_index.row;
+#else
+      selectedMenuCell = old_index.row;
+      selectedMenuCellSubAdd = new_index.row - old_index.row;
+#endif
       light_enable_interaction();
       break;
   }
@@ -210,12 +237,13 @@ static void destroy_ui(void) {
   window_destroy(s_window);
   menu_layer_destroy(s_menu_layer);
   text_layer_destroy(s_textlayer_1);
-  free(_latest);
-  free(_latestUrl);
-  free(_latestSource);
-  free(_latestCategory);
+  text_layer_destroy(s_textlayer_2);
+//  free(_latest);
+//  free(_latestUrl);
+//  free(_latestSource);
+//  free(_latestCategory);
 
-#ifdef PBL_SDK_3
+#ifdef PBL_PLATFORM_BASALT
   if(s_bitmap) {
     gbitmap_destroy(s_bitmap);
     s_bitmap = NULL;
@@ -228,7 +256,7 @@ static void destroy_ui(void) {
 #endif
 }
 
-#ifdef PBL_SDK_3
+#ifdef PBL_PLATFORM_BASALT
 static void timer_handler(void *context) {
 //  if (layer_get_hidden((Layer *)s_bitmap_layer) == false) {
       uint32_t next_delay;
@@ -254,23 +282,17 @@ static void handle_window_unload(Window* window) {
 
 static void handle_window_appear(Window* window) {
   APP_LOG(APP_LOG_LEVEL_DEBUG, "appear");
-#ifdef PBL_SDK_3
   hide_animation();
-#endif
 }
 
 static void handle_window_disappear(Window* window) {
   APP_LOG(APP_LOG_LEVEL_DEBUG, "disappear");
-#ifdef PBL_SDK_3
   hide_animation();
-#endif
 }
 
 static void handle_window_load(Window* window) {
   APP_LOG(APP_LOG_LEVEL_DEBUG, "load");
-#ifdef PBL_SDK_3
   hide_animation();
-#endif
 }
 
 void down_single_click_handler(ClickRecognizerRef recognizer, void *context) {
@@ -283,9 +305,9 @@ void config_provider(Window *window) {
 
 static void initialise_ui(void) {
   s_window = window_create();
-/*#ifndef PBL_SDK_3
+#ifndef PBL_PLATFORM_BASALT
   window_set_fullscreen(s_window, false);
-#endif*/
+#endif
 
   window_set_window_handlers(s_window, (WindowHandlers) {
     .load = handle_window_load,
@@ -313,13 +335,15 @@ static void initialise_ui(void) {
   });
   menu_layer_set_click_config_onto_window(s_menu_layer, s_window);
   layer_add_child(window_layer, (Layer *)s_menu_layer);
+
+  s_res_droid_serif_28_bold = fonts_get_system_font(FONT_KEY_GOTHIC_14);
   
-/*#ifdef PBL_SDK_3
+#ifdef PBL_PLATFORM_BASALT
   // Set up the status bar last to ensure it is on top of other Layers
   s_status_bar = status_bar_layer_create();
   layer_add_child(window_layer, status_bar_layer_get_layer(s_status_bar));
-#endif*/
-#ifdef PBL_SDK_3
+#endif
+#ifdef PBL_PLATFORM_BASALT
   s_bitmap_layer = bitmap_layer_create(GRect(37, 52, 64, 64));
   layer_insert_above_sibling(bitmap_layer_get_layer(s_bitmap_layer), (Layer *)s_menu_layer);
 
@@ -330,9 +354,15 @@ static void initialise_ui(void) {
   // Begin animation
   app_timer_register(1, timer_handler, NULL);
   hide_animation();
+#else
+  s_textlayer_2 = text_layer_create(GRect(0, 52, 144, 27));
+  text_layer_set_text(s_textlayer_2, "Saving, please wait");
+  text_layer_set_text_alignment(s_textlayer_2, GTextAlignmentCenter);
+  text_layer_set_font(s_textlayer_2, s_res_droid_serif_28_bold);
+  layer_insert_above_sibling((Layer *)s_textlayer_2, (Layer *)s_menu_layer);
+  hide_animation();
 #endif
 
-  s_res_droid_serif_28_bold = fonts_get_system_font(FONT_KEY_GOTHIC_14);
   s_textlayer_1 = text_layer_create(GRect(0, 52, 144, 27));
   text_layer_set_text(s_textlayer_1, "Currently unavailable");
   text_layer_set_text_alignment(s_textlayer_1, GTextAlignmentCenter);
@@ -344,9 +374,7 @@ static void initialise_ui(void) {
 }
 
 static void inbox_received_callback(DictionaryIterator *iterator, void *context) {
-#ifdef PBL_SDK_3
   hide_animation();
-#endif
 }
 
 void show_latest_view(char **latest, char **latestUrl, char **latestSource, char **latestCategory, int num) {
