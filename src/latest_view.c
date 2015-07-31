@@ -36,7 +36,6 @@ static TextLayer *s_textlayer_1;
 static TextLayer *s_textlayer_2;
 
 static GBitmap *bbc_image;
-static BitmapLayer *bbc_layer;
 
 static void show_animation() {
 #ifdef PBL_PLATFORM_BASALT
@@ -247,7 +246,6 @@ static void destroy_ui(void) {
   text_layer_destroy(s_textlayer_1);
   text_layer_destroy(s_textlayer_2);
 
-  bitmap_layer_destroy(bbc_layer);
   gbitmap_destroy(bbc_image);
 
 #ifdef PBL_PLATFORM_BASALT
