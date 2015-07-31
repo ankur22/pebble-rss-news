@@ -4,7 +4,6 @@
   
 #define MESSAGE_TYPE 0
 #define GET_LATEST 1
-#define GET_TOP 2
 #define GET_CATEGORIES 3
 #define ALL 4
 #define HELLO 5
@@ -29,7 +28,6 @@ static BitmapLayer *s_bitmap_layer;
 static TextLayer *s_textlayer_loading;
 #endif
 
-static char* _top;
 static char* _latest;
 static char* _username;
 
@@ -149,9 +147,9 @@ static void sendDoGetMessageIfBluetoothConnected() {
   }
 }
 
-static void displayMainMenu(char *_top, char *_latest) {
+static void displayMainMenu(char *_latest) {
   hide_splash_screen();
-  show_main_menu(_top, _latest);
+  show_main_menu(_latest);
   
   APP_LOG(APP_LOG_LEVEL_DEBUG, "Main menu has been set to display");
 }
@@ -172,17 +170,12 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
       case ALL:
         snprintf(s_buffer, sizeof(s_buffer), "ALL Received '%s'", t->value->cstring);
         APP_LOG(APP_LOG_LEVEL_DEBUG, s_buffer);
-        displayMainMenu(_top, _latest);
+        displayMainMenu(_latest);
         break;
       case GET_LATEST:
         snprintf(s_buffer, sizeof(s_buffer), "GET_LATEST Received '%s'", t->value->cstring);
         APP_LOG(APP_LOG_LEVEL_DEBUG, s_buffer);
         _latest = t->value->cstring;
-        break;
-      case GET_TOP:
-        snprintf(s_buffer, sizeof(s_buffer), "GET_TOP Received '%s'", t->value->cstring);
-        APP_LOG(APP_LOG_LEVEL_DEBUG, s_buffer);
-        _top = t->value->cstring;
         break;
       case HELLO:
         snprintf(s_buffer, sizeof(s_buffer), "HELLO Received '%s'", t->value->cstring);

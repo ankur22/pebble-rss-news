@@ -1,4 +1,4 @@
-var APP_VERSION = "1.2";
+var APP_VERSION = "1.22";
 var BASE_URL = "https://rss-news.appspot.com/0/pebble/";
 var BASE_READINGLIST_URL = "rss-news.appspot.com/pebble/";
 var USERNAME_KEY = 'USERNAME_KEY';
@@ -126,18 +126,6 @@ function getDataForPebble(key, path) {
             localStorage.setItem(USERNAME_KEY, response.username);
         }
       }
-      /*if (response.top !== undefined) {
-        console.log('top lmd: ' + response.top.lmd);
-        if (response.top.content.length > 0) {
-            obj.GET_TOP = response.top.content;
-        }
-      }
-      if (response.categories !== undefined) {
-        console.log('categories lmd: ' + response.categories.lmd);
-        if (response.categories.content.length > 0) {
-            obj.GET_CATEGORIES = response.categories.content;
-        }
-      }*/
       obj.ALL = 'all done';
       sendPebbleResponseFromRssNews(obj);
     } else {

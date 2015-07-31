@@ -35,6 +35,9 @@ static GFont s_res_droid_serif_28_bold;
 static TextLayer *s_textlayer_1;
 static TextLayer *s_textlayer_2;
 
+static GBitmap *bbc_image;
+static BitmapLayer *bbc_layer;
+
 static void show_animation() {
 #ifdef PBL_PLATFORM_BASALT
     layer_set_hidden((Layer *)s_bitmap_layer, false);
@@ -103,7 +106,7 @@ static int16_t wp_cell_height(struct MenuLayer *menu_layer, MenuIndex *cell_inde
   switch (cell_index->section) {
     case 0:
         if (numMenuItems > 0) {
-            return row_height(cell_index) + 50;
+            return row_height(cell_index) + 70;
         }
     break;
   }
@@ -126,18 +129,23 @@ static int16_t menu_get_header_height_callback(MenuLayer *menu_layer, uint16_t s
 #ifdef PBL_PLATFORM_BASALT
 static void menu_draw_row_callback_basalt(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
     //menu_cell_basic_draw(ctx, cell_layer, NULL, _latest[cell_index->row], NULL);
+
+  GRect bounds = GRect(2, 2, 48, 18);
+  bbc_image = gbitmap_create_with_resource(RESOURCE_ID_BBC_LOGO);
+  graphics_draw_bitmap_in_rect(ctx, bbc_image, bounds);
+
     if (selectedMenuCell == cell_index->row) {
         graphics_context_set_text_color(ctx, GColorWhite);
     } else {
         graphics_context_set_text_color(ctx, GColorBlack);
     }
-    graphics_draw_text(ctx, _latest[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(5, 0, 139, row_height(cell_index)), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+    graphics_draw_text(ctx, _latest[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(5, row_height(cell_index) + 4, 139, row_height(cell_index)), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
 
     graphics_context_set_text_color(ctx, GColorLightGray);
-    graphics_draw_text(ctx, _latestSource[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(10, row_height(cell_index) + 15, 139, 10), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+    graphics_draw_text(ctx, _latestSource[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(10, row_height(cell_index) + 32, 139, 10), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
 
     graphics_context_set_text_color(ctx, GColorVividCerulean);
-    graphics_draw_text(ctx, _latestCategory[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(10, row_height(cell_index) + 30, 139, 10), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+    graphics_draw_text(ctx, _latestCategory[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(10, row_height(cell_index) + 47, 139, 10), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
 }
 #else
 static void menu_draw_row_callback_aplite(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
@@ -238,10 +246,9 @@ static void destroy_ui(void) {
   menu_layer_destroy(s_menu_layer);
   text_layer_destroy(s_textlayer_1);
   text_layer_destroy(s_textlayer_2);
-//  free(_latest);
-//  free(_latestUrl);
-//  free(_latestSource);
-//  free(_latestCategory);
+
+  bitmap_layer_destroy(bbc_layer);
+  gbitmap_destroy(bbc_image);
 
 #ifdef PBL_PLATFORM_BASALT
   if(s_bitmap) {
