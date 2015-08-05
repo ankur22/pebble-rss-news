@@ -35,7 +35,10 @@ static GFont s_res_droid_serif_28_bold;
 static TextLayer *s_textlayer_1;
 static TextLayer *s_textlayer_2;
 
-static GBitmap *bbc_image;
+static GBitmap *bbc_image1;
+static GBitmap *bbc_image2;
+static GBitmap *bbc_image3;
+static int imageNumber = 0;
 
 static void show_animation() {
 #ifdef PBL_PLATFORM_BASALT
@@ -125,26 +128,49 @@ static int16_t menu_get_header_height_callback(MenuLayer *menu_layer, uint16_t s
   return MENU_CELL_BASIC_HEADER_HEIGHT;
 }
 
+static GBitmap* getImage() {
+  ++imageNumber;
+  if (imageNumber > 3) {
+    imageNumber = 1;
+  }
+
+  GBitmap* image = NULL;
+  if (imageNumber == 1) {
+    gbitmap_destroy(bbc_image1);
+    bbc_image1 = gbitmap_create_with_resource(RESOURCE_ID_BBC_LOGO);
+    image = bbc_image1;
+  } else if (imageNumber == 2) {
+    gbitmap_destroy(bbc_image2);
+    bbc_image2 = gbitmap_create_with_resource(RESOURCE_ID_BBC_LOGO);
+    image = bbc_image2;
+  } else if (imageNumber == 3) {
+    gbitmap_destroy(bbc_image3);
+    bbc_image3 = gbitmap_create_with_resource(RESOURCE_ID_BBC_LOGO);
+    image = bbc_image3;
+  }
+  return image;
+}
+
 #ifdef PBL_PLATFORM_BASALT
 static void menu_draw_row_callback_basalt(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
     //menu_cell_basic_draw(ctx, cell_layer, NULL, _latest[cell_index->row], NULL);
 
-  GRect bounds = GRect(2, 2, 48, 18);
-  bbc_image = gbitmap_create_with_resource(RESOURCE_ID_BBC_LOGO);
-  graphics_draw_bitmap_in_rect(ctx, bbc_image, bounds);
+  GRect bounds = GRect(2, 5, 48, 18);
+  GBitmap* image = getImage();
+  graphics_draw_bitmap_in_rect(ctx, image, bounds);
+
+    graphics_context_set_text_color(ctx, GColorVividCerulean);
+    graphics_draw_text(ctx, _latestCategory[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(54, 5, 90, 10), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+
+    graphics_context_set_text_color(ctx, GColorLightGray);
+    graphics_draw_text(ctx, _latestSource[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(2, 25, 139, 10), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
 
     if (selectedMenuCell == cell_index->row) {
         graphics_context_set_text_color(ctx, GColorWhite);
     } else {
         graphics_context_set_text_color(ctx, GColorBlack);
     }
-    graphics_draw_text(ctx, _latest[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(5, row_height(cell_index) + 4, 139, row_height(cell_index)), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
-
-    graphics_context_set_text_color(ctx, GColorLightGray);
-    graphics_draw_text(ctx, _latestSource[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(10, row_height(cell_index) + 32, 139, 10), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
-
-    graphics_context_set_text_color(ctx, GColorVividCerulean);
-    graphics_draw_text(ctx, _latestCategory[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(10, row_height(cell_index) + 47, 139, 10), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+    graphics_draw_text(ctx, _latest[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(5, 43, 139, row_height(cell_index)), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
 }
 #else
 static void menu_draw_row_callback_aplite(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
@@ -246,7 +272,9 @@ static void destroy_ui(void) {
   text_layer_destroy(s_textlayer_1);
   text_layer_destroy(s_textlayer_2);
 
-  gbitmap_destroy(bbc_image);
+  gbitmap_destroy(bbc_image1);
+  gbitmap_destroy(bbc_image2);
+  gbitmap_destroy(bbc_image3);
 
 #ifdef PBL_PLATFORM_BASALT
   if(s_bitmap) {
@@ -374,6 +402,10 @@ static void initialise_ui(void) {
   text_layer_set_font(s_textlayer_1, s_res_droid_serif_28_bold);
   layer_insert_above_sibling((Layer *)s_textlayer_1, (Layer *)s_menu_layer);
   hide_no_con_error();
+
+  bbc_image1 = gbitmap_create_with_resource(RESOURCE_ID_BBC_LOGO);
+  bbc_image2 = gbitmap_create_with_resource(RESOURCE_ID_BBC_LOGO);
+  bbc_image3 = gbitmap_create_with_resource(RESOURCE_ID_BBC_LOGO);
   
   APP_LOG(APP_LOG_LEVEL_DEBUG, "Initialised latest view ui");
 }
