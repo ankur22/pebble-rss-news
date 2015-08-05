@@ -25,8 +25,78 @@
                 "type": "png"
             },
             {
+                "file": "images/rss-news-48.png",
+                "name": "RSS_NEWS_LOGO",
+                "type": "png"
+            },
+            {
                 "file": "images/bbc.png",
                 "name": "BBC_LOGO",
+                "type": "png"
+            },
+            {
+                "file": "images/rt.png",
+                "name": "RT_LOGO",
+                "type": "png"
+            },
+            {
+                "file": "images/tc.png",
+                "name": "TC_LOGO",
+                "type": "png"
+            },
+            {
+                "file": "images/aj.png",
+                "name": "AJ_LOGO",
+                "type": "png"
+            },
+            {
+                "file": "images/engadget.png",
+                "name": "ENGADGET_LOGO",
+                "type": "png"
+            },
+            {
+                "file": "images/forbes.png",
+                "name": "FORBES_LOGO",
+                "type": "png"
+            },
+            {
+                "file": "images/time.png",
+                "name": "TIME_LOGO",
+                "type": "png"
+            },
+            {
+                "file": "images/pa.png",
+                "name": "PA_LOGO",
+                "type": "png"
+            },
+            {
+                "file": "images/gizmodo.png",
+                "name": "GIZMODO_LOGO",
+                "type": "png"
+            },
+            {
+                "file": "images/cnet.png",
+                "name": "CNET_LOGO",
+                "type": "png"
+            },
+            {
+                "file": "images/reuters.png",
+                "name": "REUTERS_LOGO",
+                "type": "png"
+            },
+            {
+                "file": "images/tr.png",
+                "name": "TR_LOGO",
+                "type": "png"
+            },
+            {
+                "file": "images/toi.png",
+                "name": "TOI_LOGO",
+                "type": "png"
+            },
+            {
+                "file": "images/kotaku.png",
+                "name": "KOTAKU_LOGO",
                 "type": "png"
             },
             {

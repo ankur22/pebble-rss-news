@@ -128,7 +128,41 @@ static int16_t menu_get_header_height_callback(MenuLayer *menu_layer, uint16_t s
   return MENU_CELL_BASIC_HEADER_HEIGHT;
 }
 
-static GBitmap* getImage() {
+static GBitmap* getImageIfForSource(char* source) {
+    if (strcmp(source, "BBC News - Technology") == 0 || strcmp(source, "BBC News - Home") == 0) {
+        return gbitmap_create_with_resource(RESOURCE_ID_BBC_LOGO);
+    } else if (strcmp(source, "TechCrunch") == 0) {
+        return gbitmap_create_with_resource(RESOURCE_ID_TC_LOGO);
+    } else if (strcmp(source, "RT - Daily news") == 0) {
+        return gbitmap_create_with_resource(RESOURCE_ID_RT_LOGO);
+    } else if (strcmp(source, "TIME") == 0) {
+        return gbitmap_create_with_resource(RESOURCE_ID_TIME_LOGO);
+    } else if (strcmp(source, "Al Jazeera English") == 0) {
+        return gbitmap_create_with_resource(RESOURCE_ID_AJ_LOGO);
+    } else if (strcmp(source, "Forbes - Tech") == 0 || strcmp(source, "Forbes.com: Most popular stories") == 0) {
+        return gbitmap_create_with_resource(RESOURCE_ID_FORBES_LOGO);
+    } else if (strcmp(source, "Engadget RSS Feed") == 0) {
+        return gbitmap_create_with_resource(RESOURCE_ID_ENGADGET_LOGO);
+    } else if (strcmp(source, "CNET News") == 0) {
+        return gbitmap_create_with_resource(RESOURCE_ID_CNET_LOGO);
+    } else if (strcmp(source, "Gizmodo") == 0) {
+        return gbitmap_create_with_resource(RESOURCE_ID_GIZMODO_LOGO);
+    } else if (strcmp(source, "Penny Arcade") == 0) {
+        return gbitmap_create_with_resource(RESOURCE_ID_PA_LOGO);
+    } else if (strcmp(source, "Kotaku") == 0) {
+        return gbitmap_create_with_resource(RESOURCE_ID_KOTAKU_LOGO);
+    } else if (strcmp(source, "Times of India") == 0) {
+        return gbitmap_create_with_resource(RESOURCE_ID_TOI_LOGO);
+    } else if (strcmp(source, "TechRadar: Technology reviews") == 0 || strcmp(source, "Techradar - All the latest technology news") == 0) {
+        return gbitmap_create_with_resource(RESOURCE_ID_TR_LOGO);
+    } else if (strcmp(source, "Reuters: Top News") == 0 || strcmp(source, "Reuters: Technology News") == 0) {
+        return gbitmap_create_with_resource(RESOURCE_ID_REUTERS_LOGO);
+    } else {
+        return gbitmap_create_with_resource(RESOURCE_ID_RSS_NEWS_LOGO);
+    }
+}
+
+static GBitmap* getImage(char* source) {
   ++imageNumber;
   if (imageNumber > 3) {
     imageNumber = 1;
@@ -136,17 +170,23 @@ static GBitmap* getImage() {
 
   GBitmap* image = NULL;
   if (imageNumber == 1) {
-    gbitmap_destroy(bbc_image1);
-    bbc_image1 = gbitmap_create_with_resource(RESOURCE_ID_BBC_LOGO);
-    image = bbc_image1;
+    image = getImageIfForSource(source);
+    if (image != NULL) {
+        gbitmap_destroy(bbc_image1);
+        bbc_image1 = image;
+    }
   } else if (imageNumber == 2) {
-    gbitmap_destroy(bbc_image2);
-    bbc_image2 = gbitmap_create_with_resource(RESOURCE_ID_BBC_LOGO);
-    image = bbc_image2;
+    image = getImageIfForSource(source);
+    if (image != NULL) {
+        gbitmap_destroy(bbc_image2);
+        bbc_image2 = image;
+    }
   } else if (imageNumber == 3) {
-    gbitmap_destroy(bbc_image3);
-    bbc_image3 = gbitmap_create_with_resource(RESOURCE_ID_BBC_LOGO);
-    image = bbc_image3;
+    image = getImageIfForSource(source);
+    if (image != NULL) {
+        gbitmap_destroy(bbc_image3);
+        bbc_image3 = image;
+    }
   }
   return image;
 }
@@ -155,15 +195,17 @@ static GBitmap* getImage() {
 static void menu_draw_row_callback_basalt(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
     //menu_cell_basic_draw(ctx, cell_layer, NULL, _latest[cell_index->row], NULL);
 
-  GRect bounds = GRect(5, 8, 48, 48);
-  GBitmap* image = getImage();
-  graphics_draw_bitmap_in_rect(ctx, image, bounds);
+  GBitmap* image = getImage(_latestSource[cell_index->row]);
+  if (image != NULL) {
+    GRect bounds = GRect(5, 8, 48, 48);
+    graphics_draw_bitmap_in_rect(ctx, image, bounds);
+  }
 
     graphics_context_set_text_color(ctx, GColorLightGray);
-    graphics_draw_text(ctx, _latestSource[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(59, 14, 60, 10), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+    graphics_draw_text(ctx, _latestSource[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(59, 8, 90, 20), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
 
     graphics_context_set_text_color(ctx, GColorVividCerulean);
-    graphics_draw_text(ctx, _latestCategory[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(59, 31, 60, 10), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+    graphics_draw_text(ctx, _latestCategory[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(59, 37, 90, 10), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
 
     if (selectedMenuCell == cell_index->row) {
         graphics_context_set_text_color(ctx, GColorWhite);
