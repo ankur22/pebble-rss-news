@@ -6,7 +6,7 @@
 #define SAVED_READING_LIST 8
 #define READING_LIST 7
 #define LINE_HEIGHT 15
-#define NUM_CHARS_IN_LINE 27
+#define NUM_CHARS_IN_LINE 26
 
 static Window *s_window;
 static MenuLayer *s_menu_layer;
@@ -160,17 +160,17 @@ static void menu_draw_row_callback_basalt(GContext* ctx, const Layer *cell_layer
   graphics_draw_bitmap_in_rect(ctx, image, bounds);
 
     graphics_context_set_text_color(ctx, GColorLightGray);
-    graphics_draw_text(ctx, _latestSource[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(59, 15, 60, 10), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+    graphics_draw_text(ctx, _latestSource[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(59, 14, 60, 10), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
 
     graphics_context_set_text_color(ctx, GColorVividCerulean);
-    graphics_draw_text(ctx, _latestCategory[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(59, 30, 60, 10), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+    graphics_draw_text(ctx, _latestCategory[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(59, 31, 60, 10), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
 
     if (selectedMenuCell == cell_index->row) {
         graphics_context_set_text_color(ctx, GColorWhite);
     } else {
         graphics_context_set_text_color(ctx, GColorBlack);
     }
-    graphics_draw_text(ctx, _latest[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(5, 59, 139, row_height(cell_index)), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+    graphics_draw_text(ctx, _latest[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(5, 59, 136, row_height(cell_index)), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
 }
 #else
 static void menu_draw_row_callback_aplite(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
