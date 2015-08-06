@@ -143,7 +143,7 @@ static GBitmap* getImageIfForSource(char* source) {
         return gbitmap_create_with_resource(RESOURCE_ID_TIME_LOGO);
     } else if (strcmp(source, "The New Yorker: Bu...") == 0 || strcmp(source, "The New Yorker: Hu...") == 0 || strcmp(source, "The New Yorker: Ne...") == 0 || strcmp(source, "The New Yorker: Sc...") == 0) {
         return gbitmap_create_with_resource(RESOURCE_ID_TNY_LOGO);
-    } else if (strcmp(source, "RollingStone.com: News") == 0) {
+    } else if (strcmp(source, "RollingStone.com: ...") == 0) {
         return gbitmap_create_with_resource(RESOURCE_ID_RS_LOGO);
     } else if (strcmp(source, "Al Jazeera English") == 0) {
         return gbitmap_create_with_resource(RESOURCE_ID_AJ_LOGO);
@@ -157,7 +157,7 @@ static GBitmap* getImageIfForSource(char* source) {
         return gbitmap_create_with_resource(RESOURCE_ID_XN_LOGO);
     } else if (strcmp(source, "Sports: Sports New...") == 0) {
         return gbitmap_create_with_resource(RESOURCE_ID_WP_LOGO);
-    } else if (strcmp(source, "Bits") == 0 || strcmp(source, "NYT > Technology") == 0 || strcmp(source, "NYT > Personal Tech") == 0 || strcmp(source, "NYT > Internationa...") == 0) {
+    } else if (strcmp(source, "Bits") == 0 || strcmp(source, "NYT > Technology") == 0 || strcmp(source, "NYT > Personal Tec...") == 0 || strcmp(source, "NYT > Internationa...") == 0) {
         return gbitmap_create_with_resource(RESOURCE_ID_NYT_LOGO);
     } else if (strcmp(source, "CNET News") == 0) {
         return gbitmap_create_with_resource(RESOURCE_ID_CNET_LOGO);
@@ -262,13 +262,13 @@ static void menu_draw_row_callback_basalt(GContext* ctx, const Layer *cell_layer
 }
 #else
 static void menu_draw_row_callback_aplite(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
-  GBitmap* image = getImage(_latestSource[cell_index->row]);
-  if (image != NULL) {
-    GRect bounds = GRect(5, 8, 48, 48);
-    graphics_draw_bitmap_in_rect(ctx, image, bounds);
-  }
+    GBitmap* image = getImage(_latestSource[cell_index->row]);
+    if (image != NULL) {
+        GRect bounds = GRect(5, 8, 48, 48);
+        graphics_draw_bitmap_in_rect(ctx, image, bounds);
+    }
 
-    if (selectedMenuCell == cell_index->row) {
+    if (selectedMenuCell == cell_index->row+selectedMenuCellSubAdd) {
         graphics_context_set_text_color(ctx, GColorWhite);
     } else {
         graphics_context_set_text_color(ctx, GColorBlack);
