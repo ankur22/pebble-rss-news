@@ -195,7 +195,7 @@ static GBitmap* getImageIfForSource(char* source) {
         return gbitmap_create_with_resource(RESOURCE_ID_TELEGRAPH_LOGO);
     } else if (strcmp(source, "Kotaku") == 0) {
         return gbitmap_create_with_resource(RESOURCE_ID_KOTAKU_LOGO);
-    } else if (strcmp(source, "Times of India") == 0) {
+    } else if (strcmp(source, "Times of India") == 0 || strcmp(source, "Technology News, L...") == 0 || strcmp(source, "The Times of India...") == 0) {
         return gbitmap_create_with_resource(RESOURCE_ID_TOI_LOGO);
     } else if (strcmp(source, "Video Game News at...") == 0 || strcmp(source, "New Video Game Rel...") == 0 || strcmp(source, "Game Reviews on Gi...") == 0) {
         return gbitmap_create_with_resource(RESOURCE_ID_GB_LOGO);
