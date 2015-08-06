@@ -241,8 +241,6 @@ static GBitmap* getImage(char* source) {
 
 #ifdef PBL_PLATFORM_BASALT
 static void menu_draw_row_callback_basalt(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
-    //menu_cell_basic_draw(ctx, cell_layer, NULL, _latest[cell_index->row], NULL);
-
   GBitmap* image = getImage(_latestSource[cell_index->row]);
   if (image != NULL) {
     GRect bounds = GRect(5, 8, 48, 48);
@@ -264,15 +262,20 @@ static void menu_draw_row_callback_basalt(GContext* ctx, const Layer *cell_layer
 }
 #else
 static void menu_draw_row_callback_aplite(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
-    //menu_cell_basic_draw(ctx, cell_layer, NULL, _latest[cell_index->row], NULL);
-    if (selectedMenuCell == cell_index->row+selectedMenuCellSubAdd) {
+  GBitmap* image = getImage(_latestSource[cell_index->row]);
+  if (image != NULL) {
+    GRect bounds = GRect(5, 8, 48, 48);
+    graphics_draw_bitmap_in_rect(ctx, image, bounds);
+  }
+
+    if (selectedMenuCell == cell_index->row) {
         graphics_context_set_text_color(ctx, GColorWhite);
     } else {
         graphics_context_set_text_color(ctx, GColorBlack);
     }
-    graphics_draw_text(ctx, _latest[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(5, 0, 139, row_height(cell_index)), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
-    graphics_draw_text(ctx, _latestSource[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(10, row_height(cell_index) + 15, 139, 10), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
-    graphics_draw_text(ctx, _latestCategory[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(10, row_height(cell_index) + 30, 139, 10), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+    graphics_draw_text(ctx, _latestSource[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(59, 8, 90, 20), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+    graphics_draw_text(ctx, _latestCategory[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(59, 37, 90, 10), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+    graphics_draw_text(ctx, _latest[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(5, 59, 136, row_height(cell_index)), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
 }
 #endif
 
