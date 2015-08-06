@@ -2,6 +2,7 @@ var APP_VERSION = "1.25";
 var BASE_URL = "https://rss-news.appspot.com/0/pebble/";
 var BASE_READINGLIST_URL = "rss-news.appspot.com/pebble/";
 var USERNAME_KEY = 'USERNAME_KEY';
+var CATEGORY_KEY = 'CATEGORY_KEY';
 
 Pebble.addEventListener('ready',
   function(e) {
@@ -24,7 +25,13 @@ Pebble.addEventListener('showConfiguration',
 
 Pebble.addEventListener('webviewclosed',
   function(e) {
-    console.log('Configuration window returned: ' + e.response);
+    // Decode and parse config data as JSON
+    var config_data = JSON.parse(decodeURIComponent(e.response));
+    console.log('Config window returned: ', JSON.stringify(config_data));
+
+    if (config_data.category !== undefined) {
+        localStorage.setItem(CATEGORY_KEY, config_data.category);
+    }
   }
 );
 
@@ -35,8 +42,14 @@ Pebble.addEventListener('appmessage',
     if (e.payload.MESSAGE_TYPE !== null) {
         switch (e.payload.MESSAGE_TYPE) {
           case 4:
-              console.log('ALL request received');
-              getDataForPebble('ALL', 'all');
+              var category = localStorage.getItem(CATEGORY_KEY);
+              if (category !== undefined) {
+                console.log(category + ' request received');
+                getDataForPebble('ALL', category);
+              } else {
+                console.log('ALL request received');
+                getDataForPebble('ALL', 'all');
+              }
               break;
           default:
             if (e.payload['0'] !== null) {
@@ -104,7 +117,13 @@ function addToReadingList(url) {
 
 function getDataForPebble(key, path) {
   var req = new XMLHttpRequest();
-  req.open('GET', BASE_URL + path, true);
+
+  var fullPath = BASE_URL + path;
+  if (path != 'all') {
+    fullPath = BASE_URL + 'category?category=' + path;
+  }
+
+  req.open('GET', fullPath, true);
   req.setRequestHeader('PebbleAccountToken', Pebble.getAccountToken());
   req.setRequestHeader('PebbleWatchType', getWatchType().platform);
   req.setRequestHeader('AppVersion', APP_VERSION);
