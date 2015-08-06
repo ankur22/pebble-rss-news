@@ -90,13 +90,133 @@
                 "type": "png"
             },
             {
+                "file": "images/dilbert.png",
+                "name": "DILBERT_LOGO",
+                "type": "png"
+            },
+            {
+                "file": "images/wsj.png",
+                "name": "WSJ_LOGO",
+                "type": "png"
+            },
+            {
                 "file": "images/toi.png",
                 "name": "TOI_LOGO",
                 "type": "png"
             },
             {
+                "file": "images/xkcd.png",
+                "name": "XKCD_LOGO",
+                "type": "png"
+            },
+            {
+                "file": "images/oatmeal.png",
+                "name": "OATMEAL_LOGO",
+                "type": "png"
+            },
+            {
+                "file": "images/empire.png",
+                "name": "EMPIRE_LOGO",
+                "type": "png"
+            },
+            {
+                "file": "images/economist.png",
+                "name": "ECONOMIST_LOGO",
+                "type": "png"
+            },
+            {
+                "file": "images/infoq.png",
+                "name": "INFOQ_LOGO",
+                "type": "png"
+            },
+            {
+                "file": "images/guardian.png",
+                "name": "GUARDIAN_LOGO",
+                "type": "png"
+            },
+            {
+                "file": "images/sky.png",
+                "name": "SKY_LOGO",
+                "type": "png"
+            },
+            {
+                "file": "images/gb.png",
+                "name": "GB_LOGO",
+                "type": "png"
+            },
+            {
+                "file": "images/espn.png",
+                "name": "ESPN_LOGO",
+                "type": "png"
+            },
+            {
+                "file": "images/gt.png",
+                "name": "GT_LOGO",
+                "type": "png"
+            },
+            {
+                "file": "images/lp.png",
+                "name": "LP_LOGO",
+                "type": "png"
+            },
+            {
+                "file": "images/tny.png",
+                "name": "TNY_LOGO",
+                "type": "png"
+            },
+            {
+                "file": "images/wired.png",
+                "name": "WIRED_LOGO",
+                "type": "png"
+            },
+            {
                 "file": "images/kotaku.png",
                 "name": "KOTAKU_LOGO",
+                "type": "png"
+            },
+            {
+                "file": "images/rs.png",
+                "name": "RS_LOGO",
+                "type": "png"
+            },
+            {
+                "file": "images/mit.png",
+                "name": "MIT_LOGO",
+                "type": "png"
+            },
+            {
+                "file": "images/cnn.png",
+                "name": "CNN_LOGO",
+                "type": "png"
+            },
+            {
+                "file": "images/xn.png",
+                "name": "XN_LOGO",
+                "type": "png"
+            },
+            {
+                "file": "images/nyt.png",
+                "name": "NYT_LOGO",
+                "type": "png"
+            },
+            {
+                "file": "images/jpost.png",
+                "name": "JPOST_LOGO",
+                "type": "png"
+            },
+            {
+                "file": "images/telegraph.png",
+                "name": "TELEGRAPH_LOGO",
+                "type": "png"
+            },
+            {
+                "file": "images/independent.png",
+                "name": "INDEPENDENT_LOGO",
+                "type": "png"
+            },
+            {
+                "file": "images/wp.png",
+                "name": "WP_LOGO",
                 "type": "png"
             },
             {

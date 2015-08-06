@@ -135,28 +135,76 @@ static GBitmap* getImageIfForSource(char* source) {
         return gbitmap_create_with_resource(RESOURCE_ID_TC_LOGO);
     } else if (strcmp(source, "RT - Daily news") == 0) {
         return gbitmap_create_with_resource(RESOURCE_ID_RT_LOGO);
+    } else if (strcmp(source, "New on MIT Technology Review") == 0) {
+        return gbitmap_create_with_resource(RESOURCE_ID_MIT_LOGO);
+    } else if (strcmp(source, "Wired.co.uk") == 0) {
+        return gbitmap_create_with_resource(RESOURCE_ID_WIRED_LOGO);
     } else if (strcmp(source, "TIME") == 0) {
         return gbitmap_create_with_resource(RESOURCE_ID_TIME_LOGO);
+    } else if (strcmp(source, "The New Yorker: Business") == 0 || strcmp(source, "The New Yorker: Humor") == 0 || strcmp(source, "The New Yorker: News") == 0 || strcmp(source, "The New Yorker: Science & Tech") == 0) {
+        return gbitmap_create_with_resource(RESOURCE_ID_TNY_LOGO);
+    } else if (strcmp(source, "RollingStone.com: News") == 0) {
+        return gbitmap_create_with_resource(RESOURCE_ID_RS_LOGO);
     } else if (strcmp(source, "Al Jazeera English") == 0) {
         return gbitmap_create_with_resource(RESOURCE_ID_AJ_LOGO);
     } else if (strcmp(source, "Forbes - Tech") == 0 || strcmp(source, "Forbes.com: Most popular stories") == 0) {
         return gbitmap_create_with_resource(RESOURCE_ID_FORBES_LOGO);
     } else if (strcmp(source, "Engadget RSS Feed") == 0) {
         return gbitmap_create_with_resource(RESOURCE_ID_ENGADGET_LOGO);
+    } else if (strcmp(source, "CNN.com - Top Stories") == 0 || strcmp(source, "CNN.com - Top Stories") == 0) {
+        return gbitmap_create_with_resource(RESOURCE_ID_CNN_LOGO);
+    } else if (strcmp(source, "XINHUANEWS") == 0) {
+        return gbitmap_create_with_resource(RESOURCE_ID_XN_LOGO);
+    } else if (strcmp(source, "Sports: Sports New...") == 0) {
+        return gbitmap_create_with_resource(RESOURCE_ID_WP_LOGO);
+    } else if (strcmp(source, "Bits") == 0 || strcmp(source, "NYT > Technology") == 0 || strcmp(source, "NYT > Personal Tech") == 0 || strcmp(source, "NYT > International Home") == 0) {
+        return gbitmap_create_with_resource(RESOURCE_ID_NYT_LOGO);
     } else if (strcmp(source, "CNET News") == 0) {
         return gbitmap_create_with_resource(RESOURCE_ID_CNET_LOGO);
+    } else if (strcmp(source, "InfoQ") == 0) {
+        return gbitmap_create_with_resource(RESOURCE_ID_INFOQ_LOGO);
+    } else if (strcmp(source, "xkcd.com") == 0) {
+        return gbitmap_create_with_resource(RESOURCE_ID_XKCD_LOGO);
+    } else if (strcmp(source, "Dilbert Daily Strip") == 0) {
+        return gbitmap_create_with_resource(RESOURCE_ID_DILBERT_LOGO);
+    } else if (strcmp(source, "WSJ.com: WSJD") == 0) {
+        return gbitmap_create_with_resource(RESOURCE_ID_WSJ_LOGO);
+    } else if (strcmp(source, "The Oatmeal - Comi...") == 0) {
+        return gbitmap_create_with_resource(RESOURCE_ID_OATMEAL_LOGO);
+    } else if (strcmp(source, "Empire News") == 0) {
+        return gbitmap_create_with_resource(RESOURCE_ID_EMPIRE_LOGO);
+    } else if (strcmp(source, "JPost.com - New-Tech") == 0 || strcmp(source, "JPost.com - Home") == 0) {
+        return gbitmap_create_with_resource(RESOURCE_ID_JPOST_LOGO);
+    } else if (strcmp(source, "- Sport RSS Feed") == 0 || strcmp(source, "- Arts and Enterta...") == 0 || strcmp(source, "- News RSS Feed") == 0) {
+        return gbitmap_create_with_resource(RESOURCE_ID_INDEPENDENT_LOGO);
     } else if (strcmp(source, "Gizmodo") == 0) {
         return gbitmap_create_with_resource(RESOURCE_ID_GIZMODO_LOGO);
+    } else if (strcmp(source, "Business and finance") == 0 || strcmp(source, "Science and technology") == 0) {
+        return gbitmap_create_with_resource(RESOURCE_ID_ECONOMIST_LOGO);
+    } else if (strcmp(source, "Technology | The Guardian") == 0 || strcmp(source, "Network Front | The Guardian") == 0) {
+        return gbitmap_create_with_resource(RESOURCE_ID_GUARDIAN_LOGO);
+    } else if (strcmp(source, "World News - Break...") == 0) {
+        return gbitmap_create_with_resource(RESOURCE_ID_SKY_LOGO);
+    } else if (strcmp(source, "ESPN.com") == 0) {
+        return gbitmap_create_with_resource(RESOURCE_ID_ESPN_LOGO);
     } else if (strcmp(source, "Penny Arcade") == 0) {
         return gbitmap_create_with_resource(RESOURCE_ID_PA_LOGO);
+    } else if (strcmp(source, "Lonely Planet blog") == 0) {
+        return gbitmap_create_with_resource(RESOURCE_ID_LP_LOGO);
+    } else if (strcmp(source, "World news") == 0 || strcmp(source, "Finance - Business...") == 0 || strcmp(source, "Sport") == 0) {
+        return gbitmap_create_with_resource(RESOURCE_ID_TELEGRAPH_LOGO);
     } else if (strcmp(source, "Kotaku") == 0) {
         return gbitmap_create_with_resource(RESOURCE_ID_KOTAKU_LOGO);
     } else if (strcmp(source, "Times of India") == 0) {
         return gbitmap_create_with_resource(RESOURCE_ID_TOI_LOGO);
+    } else if (strcmp(source, "Video Game News at Giant Bomb") == 0 || strcmp(source, "New Video Game Releases at Giant Bomb") == 0 || strcmp(source, "Game Reviews on Giant Bomb") == 0) {
+        return gbitmap_create_with_resource(RESOURCE_ID_GB_LOGO);
     } else if (strcmp(source, "TechRadar: Technology reviews") == 0 || strcmp(source, "Techradar - All the latest technology news") == 0) {
         return gbitmap_create_with_resource(RESOURCE_ID_TR_LOGO);
     } else if (strcmp(source, "Reuters: Top News") == 0 || strcmp(source, "Reuters: Technology News") == 0) {
         return gbitmap_create_with_resource(RESOURCE_ID_REUTERS_LOGO);
+    } else if (strcmp(source, "GameTrailers.com Vita Videos") == 0 || strcmp(source, "http://www.gametrailers.com/wii-u/feed") == 0 || strcmp(source, "GameTrailers.com PS4 Videos") == 0 || strcmp(source, "GameTrailers.com Review Hub") == 0 || strcmp(source, "http://www.gametrailers.com/3ds/feed") == 0 || strcmp(source, "GameTrailers.com Xbox One Videos") == 0) {
+        return gbitmap_create_with_resource(RESOURCE_ID_GT_LOGO);
     } else {
         return gbitmap_create_with_resource(RESOURCE_ID_RSS_NEWS_LOGO);
     }
