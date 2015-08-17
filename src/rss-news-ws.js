@@ -18,7 +18,9 @@ Pebble.addEventListener('showConfiguration',
     var username = localStorage.getItem(USERNAME_KEY);
     pebbleWatchType = '&pebbleWatchType=' + getWatchType().platform;
     appVersion = '&appVersion=' + APP_VERSION;
-    var fullUrl = "https://" + BASE_READINGLIST_URL + username + "?from=config" + appVersion + pebbleWatchType;
+    var fullUrl = "https://" + BASE_READINGLIST_URL + username + "?version=1&from=config" + appVersion + pebbleWatchType;
+    var category = getCategory();
+    fullUrl = fullUrl + "&selectedCategory=" + encodeURIComponent(category);
     console.log(fullUrl);
     Pebble.openURL(fullUrl);
 });
@@ -26,11 +28,18 @@ Pebble.addEventListener('showConfiguration',
 Pebble.addEventListener('webviewclosed',
   function(e) {
     // Decode and parse config data as JSON
-    var config_data = JSON.parse(decodeURIComponent(e.response));
-    console.log('Config window returned: ', JSON.stringify(config_data));
+    if (e.response !== undefined && e.response != null && e.response.length > 0) {
+        console.log('About to parse response from config: [' + e.response + ']');
+        var config_data = JSON.parse(decodeURIComponent(e.response));
+        console.log('Config window returned: ', JSON.stringify(config_data));
 
-    if (config_data.category !== undefined) {
-        localStorage.setItem(CATEGORY_KEY, config_data.category);
+        if (config_data.category !== undefined) {
+            localStorage.setItem(CATEGORY_KEY, config_data.category);
+        }
+
+        Pebble.showSimpleNotificationOnPebble("Category Updated", "Please restart rss-news to see the latest headlines for " + config_data.category);
+//        console.log(config_data.category + ' request after config change');
+//        getDataForPebble('ALL', config_data.category);
     }
   }
 );
@@ -42,14 +51,9 @@ Pebble.addEventListener('appmessage',
     if (e.payload.MESSAGE_TYPE !== null) {
         switch (e.payload.MESSAGE_TYPE) {
           case 4:
-              var category = localStorage.getItem(CATEGORY_KEY);
-              if (category !== undefined) {
-                console.log(category + ' request received');
-                getDataForPebble('ALL', category);
-              } else {
-                console.log('ALL request received');
-                getDataForPebble('ALL', 'all');
-              }
+              var category = getCategory();
+              console.log(category + ' request received');
+              getDataForPebble('ALL', category);
               break;
           default:
             if (e.payload['0'] !== null) {
@@ -65,6 +69,15 @@ Pebble.addEventListener('appmessage',
     }
   }
 );
+
+function getCategory() {
+    var category = localStorage.getItem(CATEGORY_KEY);
+    if (category !== undefined && category != null) {
+        return category;
+    } else {
+        return 'All';
+    }
+}
 
 function sendFinishedReadingListStuff() {
   var obj = {};
@@ -118,9 +131,9 @@ function addToReadingList(url) {
 function getDataForPebble(key, path) {
   var req = new XMLHttpRequest();
 
-  var fullPath = BASE_URL + path;
-  if (path != 'all') {
-    fullPath = BASE_URL + 'category?category=' + path;
+  var fullPath = BASE_URL + 'all';
+  if (path != 'All') {
+    fullPath = BASE_URL + 'category?category=' + encodeURIComponent(path);
   }
 
   req.open('GET', fullPath, true);
@@ -148,11 +161,25 @@ function getDataForPebble(key, path) {
       obj.ALL = 'all done';
       sendPebbleResponseFromRssNews(obj);
     } else {
-      console.log('Error: ' + req.status);
-      obj.ERROR = String('Error');
+      var obj = {};
+      var errorMessage = 'Error: ' + req.status;
+      console.log(errorMessage);
+      obj.ERROR = 'Error';
       sendPebbleResponseFromRssNews(obj);
+      sendError(errorMessage);
     }
   };
+  req.send(null);
+}
+
+function sendError(errorMessage) {
+  var req = new XMLHttpRequest();
+
+  var fullPath = BASE_URL + 'error?message=' + encodeURIComponent(errorMessage);
+  req.open('POST', fullPath, true);
+  req.setRequestHeader('PebbleAccountToken', Pebble.getAccountToken());
+  req.setRequestHeader('PebbleWatchType', getWatchType().platform);
+  req.setRequestHeader('AppVersion', APP_VERSION);
   req.send(null);
 }
 

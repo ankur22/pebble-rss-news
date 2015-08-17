@@ -203,7 +203,7 @@ static GBitmap* getImageIfForSource(char* source) {
         return gbitmap_create_with_resource(RESOURCE_ID_TR_LOGO);
     } else if (strcmp(source, "Reuters: Top News") == 0 || strcmp(source, "Reuters: Technolog...") == 0) {
         return gbitmap_create_with_resource(RESOURCE_ID_REUTERS_LOGO);
-    } else if (strcmp(source, "GameTrailers.com V...") == 0 || strcmp(source, "http://www.gametra...") == 0 || strcmp(source, "GameTrailers.com PS4...") == 0 || strcmp(source, "GameTrailers.com Review Hub") == 0 || strcmp(source, "http://www.gametra...") == 0 || strcmp(source, "GameTrailers.com X...") == 0) {
+    } else if (strcmp(source, "GameTrailers.com V...") == 0 || strcmp(source, "http://www.gametra...") == 0 || strcmp(source, "GameTrailers.com PS4...") == 0 || strcmp(source, "GameTrailers.com R...") == 0 || strcmp(source, "GameTrailers.com X...") == 0) {
         return gbitmap_create_with_resource(RESOURCE_ID_GT_LOGO);
     } else {
         return gbitmap_create_with_resource(RESOURCE_ID_RSS_NEWS_LOGO);
