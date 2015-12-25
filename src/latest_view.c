@@ -441,9 +441,9 @@ void config_provider(Window *window) {
 
 static void initialise_ui(void) {
   s_window = window_create();
-#ifndef PBL_COLOR
-  window_set_fullscreen(s_window, false);
-#endif
+//#ifndef PBL_COLOR
+//  window_set_fullscreen(s_window, false);
+//#endif
 
   window_set_window_handlers(s_window, (WindowHandlers) {
     .load = handle_window_load,
