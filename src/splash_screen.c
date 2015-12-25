@@ -71,14 +71,23 @@ static void initialise_ui(void) {
   
   s_res_droid_serif_28_bold = fonts_get_system_font(FONT_KEY_DROID_SERIF_28_BOLD);
   // s_textlayer_1
+
+#ifdef PBL_ROUND
+  s_textlayer_1 = text_layer_create(GRect(0, 52, 180, 37));
+#else
   s_textlayer_1 = text_layer_create(GRect(0, 32, 144, 37));
+#endif
   text_layer_set_text(s_textlayer_1, "rss-news");
   text_layer_set_text_alignment(s_textlayer_1, GTextAlignmentCenter);
   text_layer_set_font(s_textlayer_1, s_res_droid_serif_28_bold);
   layer_add_child(window_layer, (Layer *)s_textlayer_1);
 
   s_res_gothic_14 = fonts_get_system_font(FONT_KEY_GOTHIC_14);
+#ifdef PBL_ROUND
+  s_textlayer_2 = text_layer_create(GRect(0, 95, 180, 27));
+#else
   s_textlayer_2 = text_layer_create(GRect(0, 95, 144, 27));
+#endif
   text_layer_set_text(s_textlayer_2, "Currently unavailable");
   text_layer_set_text_alignment(s_textlayer_2, GTextAlignmentCenter);
   text_layer_set_font(s_textlayer_2, s_res_gothic_14);
@@ -86,7 +95,11 @@ static void initialise_ui(void) {
   hide_no_con_error();
   
 #ifdef PBL_SDK_3
+#ifdef PBL_ROUND
+  s_bitmap_layer = bitmap_layer_create(GRect(57, 92, 64, 64));
+#else
   s_bitmap_layer = bitmap_layer_create(GRect(37, 72, 64, 64));
+#endif
   layer_add_child(window_layer, bitmap_layer_get_layer(s_bitmap_layer));
 
   // Create sequence

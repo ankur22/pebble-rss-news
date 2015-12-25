@@ -253,22 +253,41 @@ static GBitmap* getImage(char* source) {
 static void menu_draw_row_callback_basalt(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
   GBitmap* image = getImage(_latestSource[cell_index->row]);
   if (image != NULL) {
+#ifdef PBL_ROUND
+    GRect bounds = GRect(25, 8, 48, 48);
+#else
     GRect bounds = GRect(5, 8, 48, 48);
+#endif
     graphics_draw_bitmap_in_rect(ctx, image, bounds);
   }
 
     graphics_context_set_text_color(ctx, GColorLightGray);
-    graphics_draw_text(ctx, _latestSource[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(59, 8, 90, 20), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+#ifdef PBL_ROUND
+    GRect source_bounds = GRect(79, 8, 90, 20);
+#else
+    GRect source_bounds = GRect(59, 8, 90, 20);
+#endif
+    graphics_draw_text(ctx, _latestSource[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), source_bounds, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
 
     graphics_context_set_text_color(ctx, GColorVividCerulean);
-    graphics_draw_text(ctx, _latestCategory[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(59, 37, 90, 10), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+#ifdef PBL_ROUND
+    GRect cat_bounds = GRect(79, 37, 90, 10);
+#else
+    GRect cat_bounds = GRect(59, 37, 90, 10);
+#endif
+    graphics_draw_text(ctx, _latestCategory[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), cat_bounds, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
 
     if (selectedMenuCell == cell_index->row) {
         graphics_context_set_text_color(ctx, GColorWhite);
     } else {
         graphics_context_set_text_color(ctx, GColorBlack);
     }
-    graphics_draw_text(ctx, _latest[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(5, 59, 136, row_height(cell_index)), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+#ifdef PBL_ROUND
+    GRect headline_bounds = GRect(25, 59, 136, row_height(cell_index));
+#else
+    GRect headline_bounds = GRect(5, 59, 136, row_height(cell_index));
+#endif
+    graphics_draw_text(ctx, _latest[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), headline_bounds, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
 }
 #else
 static void menu_draw_row_callback_aplite(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
@@ -441,8 +460,8 @@ void config_provider(Window *window) {
 
 static void initialise_ui(void) {
   s_window = window_create();
-//#ifndef PBL_COLOR
-//  window_set_fullscreen(s_window, false);
+//#ifdef PBL_PLATFORM_APLITE
+//  window_set_fullscreen(s_window, true);
 //#endif
 
   window_set_window_handlers(s_window, (WindowHandlers) {
@@ -455,8 +474,12 @@ static void initialise_ui(void) {
   window_set_click_config_provider(s_window, (ClickConfigProvider) config_provider);
 
   Layer *window_layer = window_get_root_layer(s_window);
-  
+
+#ifdef PBL_ROUND
+  s_menu_layer = menu_layer_create(GRect(0, 0, 180, 180));
+#else
   s_menu_layer = menu_layer_create(GRect(0, 0, 144, 152));
+#endif
   menu_layer_set_callbacks(s_menu_layer, NULL, (MenuLayerCallbacks){
     .get_num_sections = menu_get_num_sections_callback,
     .get_num_rows = menu_get_num_rows_callback,
@@ -478,9 +501,12 @@ static void initialise_ui(void) {
   // Set up the status bar last to ensure it is on top of other Layers
   s_status_bar = status_bar_layer_create();
   layer_add_child(window_layer, status_bar_layer_get_layer(s_status_bar));
-#endif
-#ifdef PBL_COLOR
+
+#ifdef PBL_ROUND
+  s_bitmap_layer = bitmap_layer_create(GRect(57, 52, 64, 64));
+#else
   s_bitmap_layer = bitmap_layer_create(GRect(37, 52, 64, 64));
+#endif
   layer_insert_above_sibling(bitmap_layer_get_layer(s_bitmap_layer), (Layer *)s_menu_layer);
 
   // Create sequence
@@ -499,7 +525,11 @@ static void initialise_ui(void) {
   hide_animation();
 #endif
 
+#ifdef PBL_ROUND
+  s_textlayer_1 = text_layer_create(GRect(0, 52, 180, 27));
+#else
   s_textlayer_1 = text_layer_create(GRect(0, 52, 144, 27));
+#endif
   text_layer_set_text(s_textlayer_1, "Currently unavailable");
   text_layer_set_text_alignment(s_textlayer_1, GTextAlignmentCenter);
   text_layer_set_font(s_textlayer_1, s_res_droid_serif_28_bold);
