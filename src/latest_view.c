@@ -187,8 +187,18 @@ static GBitmap* getImageIfForSource(char* source) {
         return gbitmap_create_with_resource(RESOURCE_ID_SKY_LOGO);
     } else if (strcmp(source, "ESPN.com") == 0) {
         return gbitmap_create_with_resource(RESOURCE_ID_ESPN_LOGO);
+    } else if (strcmp(source, "The Verge -  All P...") == 0) {
+        return gbitmap_create_with_resource(RESOURCE_ID_VERGE_LOGO);
     } else if (strcmp(source, "Penny Arcade") == 0) {
         return gbitmap_create_with_resource(RESOURCE_ID_PA_LOGO);
+    } else if (strcmp(source, "Repubblica.it > Ho...") == 0) {
+        return gbitmap_create_with_resource(RESOURCE_ID_RIT_LOGO);
+    } else if (strcmp(source, "SPIEGEL ONLINE - S...") == 0) {
+        return gbitmap_create_with_resource(RESOURCE_ID_SPIEGEL_LOGO);
+    } else if (strcmp(source, "CNN CHILE") == 0) {
+        return gbitmap_create_with_resource(RESOURCE_ID_CNNC_LOGO);
+    } else if (strcmp(source, "Actu : Toute l'act...") == 0) {
+        return gbitmap_create_with_resource(RESOURCE_ID_LMFR_LOGO);
     } else if (strcmp(source, "Lonely Planet blog") == 0) {
         return gbitmap_create_with_resource(RESOURCE_ID_LP_LOGO);
     } else if (strcmp(source, "World news") == 0 || strcmp(source, "Finance - Business...") == 0 || strcmp(source, "Sport") == 0) {

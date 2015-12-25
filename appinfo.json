@@ -220,6 +220,31 @@
                 "type": "png"
             },
             {
+                "file": "images/verge.png",
+                "name": "VERGE_LOGO",
+                "type": "png"
+            },
+            {
+                "file": "images/rit.png",
+                "name": "RIT_LOGO",
+                "type": "png"
+            },
+            {
+                "file": "images/spiegel.png",
+                "name": "SPIEGEL_LOGO",
+                "type": "png"
+            },
+            {
+                "file": "images/lmfr.png",
+                "name": "LMFR_LOGO",
+                "type": "png"
+            },
+            {
+                "file": "images/cnnc.png",
+                "name": "CNNC_LOGO",
+                "type": "png"
+            },
+            {
                 "file": "data/loading.png",
                 "name": "LOADING_ANIMATION",
                 "type": "raw"
