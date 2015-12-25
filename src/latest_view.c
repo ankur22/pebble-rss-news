@@ -369,7 +369,11 @@ static void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, v
 static void menu_draw_header_callback(GContext* ctx, const Layer *cell_layer, uint16_t section_index, void *data) {
   switch (section_index) {
     case 0:
+#ifdef PBL_ROUND
+      menu_cell_basic_header_draw(ctx, cell_layer, "                    rss-news");
+#else
       menu_cell_basic_header_draw(ctx, cell_layer, "rss-news");
+#endif
       break;
   }
 }
