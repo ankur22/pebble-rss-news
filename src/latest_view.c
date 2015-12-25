@@ -11,7 +11,7 @@
 static Window *s_window;
 static MenuLayer *s_menu_layer;
 
-#if defined(PBL_COLOR)
+#ifdef PBL_COLOR
 static StatusBarLayer *s_status_bar;
 
 static GBitmapSequence *s_sequence;
@@ -41,7 +41,7 @@ static GBitmap *bbc_image3;
 static int imageNumber = 0;
 
 static void show_animation() {
-#if defined(PBL_COLOR)
+#ifdef PBL_COLOR
     layer_set_hidden((Layer *)s_bitmap_layer, false);
 #else
     layer_set_hidden((Layer *)s_textlayer_2, false);
@@ -49,7 +49,7 @@ static void show_animation() {
 }
 
 static void hide_animation() {
-#if defined(PBL_COLOR)
+#ifdef PBL_COLOR
     layer_set_hidden((Layer *)s_bitmap_layer, true);
 #else
     layer_set_hidden((Layer *)s_textlayer_2, true);
@@ -249,7 +249,7 @@ static GBitmap* getImage(char* source) {
   return image;
 }
 
-#if defined(PBL_COLOR)
+#ifdef PBL_COLOR
 static void menu_draw_row_callback_basalt(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
   GBitmap* image = getImage(_latestSource[cell_index->row]);
   if (image != NULL) {
@@ -293,7 +293,7 @@ static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuI
   switch (cell_index->section) {
     case 0:
         if (numMenuItems > 0) {
-#if defined(PBL_COLOR)
+#ifdef PBL_COLOR
             menu_draw_row_callback_basalt(ctx, cell_layer, cell_index, data);
 #else
             menu_draw_row_callback_aplite(ctx, cell_layer, cell_index, data);
@@ -358,7 +358,7 @@ static void menu_draw_header_callback(GContext* ctx, const Layer *cell_layer, ui
 static void menu_selection_changed(struct MenuLayer *menu_layer, MenuIndex new_index, MenuIndex old_index, void *callback_context) {
   switch (new_index.section) {
     case 0:
-#if defined(PBL_COLOR)
+#ifdef PBL_COLOR
       selectedMenuCell = new_index.row;
 #else
       selectedMenuCell = old_index.row;
@@ -379,7 +379,7 @@ static void destroy_ui(void) {
   gbitmap_destroy(bbc_image2);
   gbitmap_destroy(bbc_image3);
 
-#if defined(PBL_COLOR)
+#ifdef PBL_COLOR
   if(s_bitmap) {
     gbitmap_destroy(s_bitmap);
     s_bitmap = NULL;
@@ -392,7 +392,7 @@ static void destroy_ui(void) {
 #endif
 }
 
-#if defined(PBL_COLOR)
+#ifdef PBL_COLOR
 static void timer_handler(void *context) {
 //  if (layer_get_hidden((Layer *)s_bitmap_layer) == false) {
       uint32_t next_delay;
@@ -441,7 +441,7 @@ void config_provider(Window *window) {
 
 static void initialise_ui(void) {
   s_window = window_create();
-#ifndef defined(PBL_COLOR)
+#ifndef PBL_COLOR
   window_set_fullscreen(s_window, false);
 #endif
 
@@ -474,12 +474,12 @@ static void initialise_ui(void) {
 
   s_res_droid_serif_28_bold = fonts_get_system_font(FONT_KEY_GOTHIC_14);
   
-#if defined(PBL_COLOR)
+#ifdef PBL_COLOR
   // Set up the status bar last to ensure it is on top of other Layers
   s_status_bar = status_bar_layer_create();
   layer_add_child(window_layer, status_bar_layer_get_layer(s_status_bar));
 #endif
-#if defined(PBL_COLOR)
+#ifdef PBL_COLOR
   s_bitmap_layer = bitmap_layer_create(GRect(37, 52, 64, 64));
   layer_insert_above_sibling(bitmap_layer_get_layer(s_bitmap_layer), (Layer *)s_menu_layer);
 
