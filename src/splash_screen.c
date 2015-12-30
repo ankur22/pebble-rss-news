@@ -240,7 +240,11 @@ static void registerCallbacks(void) {
 }
 
 static void openAppMessage(void) {
+#ifndef PBL_PLATFORM_APLITE
   app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
+#else
+  app_message_open(8200, 2000);
+#endif
 }
 
 void show_splash_screen(void) {
