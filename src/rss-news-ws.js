@@ -1,4 +1,4 @@
-var APP_VERSION = "1.27";
+var APP_VERSION = "1.28";
 var BASE_URL = "https://rss-news.appspot.com/0/pebble/";
 var BASE_READINGLIST_URL = "rss-news.appspot.com/pebble/";
 var USERNAME_KEY = 'USERNAME_KEY';
