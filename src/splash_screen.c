@@ -18,7 +18,7 @@ static TextLayer *s_textlayer_1;
 static GFont s_res_gothic_14;
 static TextLayer *s_textlayer_2;
 
-#ifdef PBL_SDK_3
+#ifndef PBL_PLATFORM_APLITE
 static StatusBarLayer *s_status_bar;
 
 static GBitmapSequence *s_sequence;
@@ -31,7 +31,7 @@ static TextLayer *s_textlayer_loading;
 static char* _latest;
 static char* _username;
 
-#ifdef PBL_SDK_3
+#ifndef PBL_PLATFORM_APLITE
 static void timer_handler(void *context) {
   uint32_t next_delay;
 
@@ -51,7 +51,7 @@ static void timer_handler(void *context) {
 
 static void show_no_con_error() {
     layer_set_hidden((Layer *)s_textlayer_2, false);
-#ifdef PBL_SDK_3
+#ifndef PBL_PLATFORM_APLITE
     layer_set_hidden((Layer *)s_bitmap_layer, true);
 #else
     layer_set_hidden((Layer *)s_textlayer_loading, true);
@@ -64,9 +64,9 @@ static void hide_no_con_error() {
 
 static void initialise_ui(void) {
   s_window = window_create();
-#ifndef PBL_SDK_3
-  window_set_fullscreen(s_window, false);
-#endif
+//#ifdef PBL_PLATFORM_APLITE
+//  window_set_fullscreen(s_window, false);
+//#endif
   Layer *window_layer = window_get_root_layer(s_window);
   
   s_res_droid_serif_28_bold = fonts_get_system_font(FONT_KEY_DROID_SERIF_28_BOLD);
@@ -94,7 +94,7 @@ static void initialise_ui(void) {
   layer_add_child(window_layer, (Layer *)s_textlayer_2);
   hide_no_con_error();
   
-#ifdef PBL_SDK_3
+#ifndef PBL_PLATFORM_APLITE
 #ifdef PBL_ROUND
   s_bitmap_layer = bitmap_layer_create(GRect(57, 92, 64, 64));
 #else
@@ -125,7 +125,7 @@ static void destroy_ui(void) {
   window_destroy(s_window);
   text_layer_destroy(s_textlayer_1);
   text_layer_destroy(s_textlayer_2);
-#ifdef PBL_SDK_3
+#ifndef PBL_PLATFORM_APLITE
   if(s_bitmap) {
     gbitmap_destroy(s_bitmap);
     s_bitmap = NULL;

@@ -147,8 +147,8 @@ function getDataForPebble(key, path) {
       var response = JSON.parse(req.responseText);
       if (response.latest !== undefined) {
         console.log('latest lmd: ' + response.latest.lmd);
-        if (response.latest.content.length > 0) {
-            obj.GET_LATEST = response.latest.content;
+        if (response.latest.content.length > 0 && response.latest.content.length > 6) {
+            obj.GET_LATEST = response.latest.content[response.latest.content.length - 6];
         }
       }
       if (response.username !== undefined) {

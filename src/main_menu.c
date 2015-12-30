@@ -31,6 +31,8 @@ static int split_string(char *fullString, char **array, char **arrayUrl, char **
 void show_main_menu(char* latest) {
   _numLatestItems = split_string(latest, _latestArray, _latestArrayUrl, _latestArraySource, _latestArrayCategory);
 
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "Loaded main menu");
+
   show_latest_view(_latestArray, _latestArrayUrl, _latestArraySource, _latestArrayCategory, _numLatestItems);
   light_enable_interaction();
 }
