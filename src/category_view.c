@@ -335,8 +335,7 @@ static void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, v
   switch (cell_index->section) {
     case 0:
       if (numMenuItems > 0) {
-        do_post(_latestUrl[cell_index->row]);
-        APP_LOG(APP_LOG_LEVEL_DEBUG, _latestUrl[cell_index->row]);
+        do_post(_categories[cell_index->row]);
         APP_LOG(APP_LOG_LEVEL_DEBUG, _categories[cell_index->row]);
         light_enable_interaction();
         show_animation();
