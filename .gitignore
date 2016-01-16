@@ -1,5 +1,7 @@
 /build
 
+.idea
+
 *.json~
 *.h~
 *.c~

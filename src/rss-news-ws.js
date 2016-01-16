@@ -1,8 +1,9 @@
 var APP_VERSION = "1.28";
 var BASE_URL = "https://rss-news.appspot.com/0/pebble/";
+var BASE_URL_V1 = "https://rss-news.appspot.com/1/pebble/";
 var BASE_READINGLIST_URL = "rss-news.appspot.com/pebble/";
 var USERNAME_KEY = 'USERNAME_KEY';
-var CATEGORY_KEY = 'CATEGORY_KEY';
+var CATEGORIES_HEADLINES_KEY = 'CATEGORIES_HEADLINES_KEY';
 
 Pebble.addEventListener('ready',
   function(e) {
@@ -18,9 +19,7 @@ Pebble.addEventListener('showConfiguration',
     var username = localStorage.getItem(USERNAME_KEY);
     pebbleWatchType = '&pebbleWatchType=' + getWatchType().platform;
     appVersion = '&appVersion=' + APP_VERSION;
-    var fullUrl = "https://" + BASE_READINGLIST_URL + username + "?version=1&from=config" + appVersion + pebbleWatchType;
-    var category = getCategory();
-    fullUrl = fullUrl + "&selectedCategory=" + encodeURIComponent(category);
+    var fullUrl = "https://" + BASE_READINGLIST_URL + username + "?version=0&from=config" + appVersion + pebbleWatchType;
     console.log(fullUrl);
     Pebble.openURL(fullUrl);
 });
@@ -32,14 +31,6 @@ Pebble.addEventListener('webviewclosed',
         console.log('About to parse response from config: [' + e.response + ']');
         var config_data = JSON.parse(decodeURIComponent(e.response));
         console.log('Config window returned: ', JSON.stringify(config_data));
-
-        if (config_data.category !== undefined) {
-            localStorage.setItem(CATEGORY_KEY, config_data.category);
-        }
-
-        Pebble.showSimpleNotificationOnPebble("Category Updated", "Please restart rss-news to see the latest headlines for " + config_data.category);
-//        console.log(config_data.category + ' request after config change');
-//        getDataForPebble('ALL', config_data.category);
     }
   }
 );
@@ -51,9 +42,7 @@ Pebble.addEventListener('appmessage',
     if (e.payload.MESSAGE_TYPE !== null) {
         switch (e.payload.MESSAGE_TYPE) {
           case 4:
-              var category = getCategory();
-              console.log(category + ' request received');
-              getDataForPebble('ALL', category);
+              getDataForPebble();
               break;
           default:
             if (e.payload['0'] !== null) {
@@ -69,15 +58,6 @@ Pebble.addEventListener('appmessage',
     }
   }
 );
-
-function getCategory() {
-    var category = localStorage.getItem(CATEGORY_KEY);
-    if (category !== undefined && category != null) {
-        return category;
-    } else {
-        return 'All';
-    }
-}
 
 function sendFinishedReadingListStuff() {
   var obj = {};
@@ -128,27 +108,25 @@ function addToReadingList(url) {
   req.send(null);
 }
 
-function getDataForPebble(key, path) {
+function getDataForPebble() {
   var req = new XMLHttpRequest();
 
-  var fullPath = BASE_URL + 'all';
-  if (path != 'All') {
-    fullPath = BASE_URL + 'category?category=' + encodeURIComponent(path);
-  }
+  var fullPath = BASE_URL_V1 + 'all';
 
   req.open('GET', fullPath, true);
   req.setRequestHeader('PebbleAccountToken', Pebble.getAccountToken());
   req.setRequestHeader('PebbleWatchType', getWatchType().platform);
   req.setRequestHeader('AppVersion', APP_VERSION);
   req.onload = function(e) {
-    console.log('Received a response for MESSAGE_TYPE ' + key);
+    console.log('Received a response for MESSAGE_TYPE ALL');
     if(req.status == 200) {
       var obj = {};
       var response = JSON.parse(req.responseText);
-      if (response.latest !== undefined) {
-        console.log('latest lmd: ' + response.latest.lmd);
-        if (response.latest.content.length > 0) {
-            obj.GET_LATEST = response.latest.content;
+      if (response.headlines.USA.latest !== undefined) {
+        console.log('latest lmd: ' + response.headlines.USA.latest.lmd);
+        if (response.headlines.USA.latest.content.length > 0) {
+            obj.GET_LATEST = response.headlines.USA.latest.content;
+            localStorage.setItem(CATEGORIES_HEADLINES_KEY, response);
         }
       }
       if (response.username !== undefined) {
