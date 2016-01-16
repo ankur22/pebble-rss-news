@@ -1,3 +1,3 @@
-void show_latest_view(char **Categories, int num);
-void hide_latest_view(void);
-void reset_latest_view(void);
+void show_category_view(char **categories, int num);
+void hide_category_view(void);
+void reset_category_view(void);

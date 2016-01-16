@@ -41,7 +41,7 @@ void show_main_menu(char* latest) {
 */
 
 static int _numCategories = 0;
-static char *_categoryArray[20];
+static char *_categoryArray[60];
 
 static int split_string(char *fullString, char **array) {
   int num = 0;
@@ -62,6 +62,6 @@ void show_main_menu(char* categories) {
 
   APP_LOG(APP_LOG_LEVEL_DEBUG, "Loaded main menu");
 
-  show_latest_view(_categoryArray, _numCategories);
+  show_category_view(_categoryArray, _numCategories);
   light_enable_interaction();
 }

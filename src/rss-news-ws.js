@@ -122,10 +122,10 @@ function getDataForPebble() {
     if(req.status == 200) {
       var obj = {};
       var response = JSON.parse(req.responseText);
-      if (response.headlines.USA.latest !== undefined) {
+      if (response.categories !== undefined) {
         console.log('latest lmd: ' + response.headlines.USA.latest.lmd);
-        if (response.headlines.USA.latest.content.length > 0) {
-            obj.GET_LATEST = response.headlines.USA.latest.content;
+        if (response.categories.length > 0) {
+            obj.GET_LATEST = response.categories;
             localStorage.setItem(CATEGORIES_HEADLINES_KEY, response);
         }
       }

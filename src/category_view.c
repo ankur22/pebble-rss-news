@@ -1,12 +1,12 @@
 #include <pebble.h>
-//#include "latest_view.h"
 #include "category_view.h"
-#include "main_menu.h"
+// #include "main_menu.h"
+// #include "latest_view.h"
 
 #define MESSAGE_TYPE 0
 #define SAVED_READING_LIST 8
 #define READING_LIST 7
-#define LINE_HEIGHT 15
+#define LINE_HEIGHT 20
 #define NUM_CHARS_IN_LINE 26
 
 static Window *s_window;
@@ -105,7 +105,7 @@ static int16_t wp_cell_height(struct MenuLayer *menu_layer, MenuIndex *cell_inde
   switch (cell_index->section) {
     case 0:
         if (numMenuItems > 0) {
-            return row_height(cell_index) + 81;
+            return row_height(cell_index) + 20;
         }
     break;
   }
@@ -248,15 +248,31 @@ static GBitmap* getImage(char* source) {
 
 #ifndef PBL_PLATFORM_APLITE
 static void menu_draw_row_callback_basalt(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
-//  GBitmap* image = getImage(_latestSource[cell_index->row]);
-//  if (image != NULL) {
-//#ifdef PBL_ROUND
-//    GRect bounds = GRect(25, 8, 48, 48);
-//#else
-//    GRect bounds = GRect(5, 8, 48, 48);
-//#endif
-//    graphics_draw_bitmap_in_rect(ctx, image, bounds);
-//  }
+//   GBitmap* image = getImage(_latestSource[cell_index->row]);
+//   if (image != NULL) {
+// #ifdef PBL_ROUND
+//     GRect bounds = GRect(25, 8, 48, 48);
+// #else
+//     GRect bounds = GRect(5, 8, 48, 48);
+// #endif
+//     graphics_draw_bitmap_in_rect(ctx, image, bounds);
+//   }
+
+//     graphics_context_set_text_color(ctx, GColorLightGray);
+// #ifdef PBL_ROUND
+//     GRect source_bounds = GRect(79, 8, 90, 20);
+// #else
+//     GRect source_bounds = GRect(59, 8, 90, 20);
+// #endif
+//     graphics_draw_text(ctx, _latestSource[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), source_bounds, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+
+//     graphics_context_set_text_color(ctx, GColorVividCerulean);
+// #ifdef PBL_ROUND
+//     GRect cat_bounds = GRect(79, 37, 90, 10);
+// #else
+//     GRect cat_bounds = GRect(59, 37, 90, 10);
+// #endif
+//     graphics_draw_text(ctx, _latestCategory[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), cat_bounds, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
 
     if (selectedMenuCell == cell_index->row) {
         graphics_context_set_text_color(ctx, GColorWhite);
@@ -264,26 +280,28 @@ static void menu_draw_row_callback_basalt(GContext* ctx, const Layer *cell_layer
         graphics_context_set_text_color(ctx, GColorBlack);
     }
 #ifdef PBL_ROUND
-    GRect headline_bounds = GRect(25, 59, 136, row_height(cell_index));
+    GRect headline_bounds = GRect(25, 8, 136, row_height(cell_index));
 #else
-    GRect headline_bounds = GRect(5, 59, 136, row_height(cell_index));
+    GRect headline_bounds = GRect(5, 8, 136, row_height(cell_index));
 #endif
-    graphics_draw_text(ctx, _categories[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), headline_bounds, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+    graphics_draw_text(ctx, _categories[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD), headline_bounds, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
 }
 #else
 static void menu_draw_row_callback_aplite(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
-//    GBitmap* image = getImage(_latestSource[cell_index->row]);
-//    if (image != NULL) {
-//        GRect bounds = GRect(5, 8, 48, 48);
-//        graphics_draw_bitmap_in_rect(ctx, image, bounds);
-//    }
+//     GBitmap* image = getImage(_latestSource[cell_index->row]);
+//     if (image != NULL) {
+//         GRect bounds = GRect(5, 8, 48, 48);
+//         graphics_draw_bitmap_in_rect(ctx, image, bounds);
+//     }
 
     if (selectedMenuCell == cell_index->row) {
         graphics_context_set_text_color(ctx, GColorWhite);
     } else {
         graphics_context_set_text_color(ctx, GColorBlack);
     }
-    graphics_draw_text(ctx, _categories[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(5, 59, 136, row_height(cell_index)), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+//     graphics_draw_text(ctx, _latestSource[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(59, 8, 90, 20), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+//     graphics_draw_text(ctx, _latestCategory[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(59, 37, 90, 10), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+    graphics_draw_text(ctx, _categories[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD), GRect(5, 8, 137, row_height(cell_index)), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
 }
 #endif
 
@@ -427,11 +445,11 @@ static void handle_window_load(Window* window) {
   hide_animation();
 }
 
-void down_single_click_handler(ClickRecognizerRef recognizer, void *context) {
+static void down_single_click_handler(ClickRecognizerRef recognizer, void *context) {
     hide_no_con_error();
 }
 
-void config_provider(Window *window) {
+static void config_provider(Window *window) {
   window_single_click_subscribe(BUTTON_ID_SELECT, down_single_click_handler);
 }
 
@@ -524,7 +542,7 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
   hide_animation();
 }
 
-void show_latest_view(char **categories, int num) {
+void show_category_view(char **categories, int num) {
   numMenuItems = num;
   _categories = categories;
 
@@ -536,11 +554,11 @@ void show_latest_view(char **categories, int num) {
   APP_LOG(APP_LOG_LEVEL_DEBUG, "Latest view added to window stack");
 }
 
-void hide_latest_view(void) {
+void hide_category_view(void) {
   window_stack_remove(s_window, true);
 }
 
-void reset_latest_view(void) {
+void reset_category_view(void) {
   //numMenuItems = 0;
   selectedMenuCell = 0;
   //menu_layer_reload_data(s_menu_layer);

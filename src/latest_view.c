@@ -1,6 +1,6 @@
 #include <pebble.h>
 #include "latest_view.h"
-#include "main_menu.h"
+// #include "main_menu.h"
 
 #define MESSAGE_TYPE 0
 #define SAVED_READING_LIST 8
