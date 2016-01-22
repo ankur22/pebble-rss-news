@@ -37,7 +37,8 @@ Pebble.addEventListener('webviewclosed',
 );
 
 function getFavorites() {
-	obj = localStorage.getItem(FAVORITES_KEY);
+	var obj = localStorage.getItem(FAVORITES_KEY);
+    console.log(obj);
 	if (obj == null) {
 		obj = {};
 		localStorage.setItem(FAVORITES_KEY, JSON.stringify(obj));
@@ -48,7 +49,7 @@ function getFavorites() {
 }
 
 function updateFavorites(category) {
-	obj = getFavorites();
+	var obj = getFavorites();
 	if (category in obj) {
 		obj[category] = obj[category] + 1;
 	} else {
@@ -60,8 +61,10 @@ function updateFavorites(category) {
 function getKeyForValueAndNotInArray(obj, value, array) {
 	for (var key in obj) {
 		if (obj.hasOwnProperty(key)) {
-			if(obj[key] == value && key not in array) {
-				return key;
+			if(obj[key] == value) {
+				if (array.indexOf(key) == -1) {
+					return key;
+				}
 			}
 		}
 	}
@@ -69,22 +72,25 @@ function getKeyForValueAndNotInArray(obj, value, array) {
 }
 
 function getOrderedFavorites() {
-	obj = getFavorites();
-	values = [];
+	var obj = getFavorites();
+	var values = [];
 	for (var key in obj) {
 		if (obj.hasOwnProperty(key)) {
 			values.push(obj[key]);
 		}
 	}
-	values.sort(function(a, b){return a-b});
+	values.sort(function(a, b){return b-a});
+	console.log(values);
 	
-	favs = [];
-	for (value in values) {
-		key = getKeyForValueAndNotInArray(obj, value, favs);
+	var favs = [];
+	for (i = 0; i < values.length; i++) {
+		var value = values[i];
+		var key = getKeyForValueAndNotInArray(obj, value, favs);
 		if (key != null) {
 			favs.push(key);
 		}
 	}
+	return favs;
 }
 
 function sendMissingCategoriesErrorIfNull(categories) {
@@ -208,13 +214,20 @@ function addToReadingList(url) {
 }
 
 function orderCategoriesAgainstFavs(categories) {
-	favs = getOrderedFavorites();
+	var favs = getOrderedFavorites();
 	
-	newCategories = favs;
-	for (category in categories) {
-		if (newCategories.indexOf(category) == -1) {
-			newCategories.push(category);
+	var newCategoriesSplit = favs;
+	var splitCategories = categories.substring(1).split("|");
+	for (i = 0; i < splitCategories.length; ++i) {
+		var category = splitCategories[i];
+		if (newCategoriesSplit.indexOf(category) == -1) {
+			newCategoriesSplit.push(category);
 		}
+	}
+
+	var newCategories = "";
+	for (i = 0; i < newCategoriesSplit.length; ++i) {
+		newCategories = newCategories + "|" + newCategoriesSplit[i];
 	}
 	
 	return newCategories;
