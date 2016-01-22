@@ -34,7 +34,7 @@ Layer *up_arrow_layer;
 Layer *down_arrow_layer;
 Layer *right_arrow_layer;
 Layer *right_panel_layer;
-Layer *heart_layer;
+// Layer *heart_layer;
 
 
 static int _numLatestItems = 0;
@@ -48,7 +48,7 @@ static GPath *s_up_path_ptr = NULL;
 static GPath *s_down_path_ptr = NULL;
 static GPath *s_right_path_ptr = NULL;
 static GPath *s_right_panel_path_ptr = NULL;
-static GPath *s_heart_path_ptr = NULL;
+// static GPath *s_heart_path_ptr = NULL;
 
 static const GPathInfo BOLT_PATH_INFO = {
   .num_points = 3,
@@ -70,21 +70,21 @@ static const GPathInfo RIGHT_PANEL_BG = {
   .points = (GPoint []) {{121, 0}, {144, 0}, {144, 168}, {121, 168}}
 };
 
-static const GPathInfo HEART_VERTICES = {
-  .num_points = 8,
-  .points = (GPoint []) {{5, 0}, {10, 5}, {15, 0}, {20, 5}, {20, 10}, {10, 20}, {0, 10}, {0, 5}}
-};
+// static const GPathInfo HEART_VERTICES = {
+//   .num_points = 8,
+//   .points = (GPoint []) {{5, 0}, {10, 5}, {15, 0}, {20, 5}, {20, 10}, {10, 20}, {0, 10}, {0, 5}}
+// };
 
-void heart_layer_update_proc(Layer *my_layer, GContext* ctx) {
-  // Fill the path:
-  graphics_context_set_fill_color(ctx, GColorVividCerulean);
-  gpath_draw_filled(ctx, s_heart_path_ptr);
-  // Stroke the path:
-  graphics_context_set_stroke_color(ctx, GColorBlack);
-  graphics_context_set_stroke_width(ctx, 3);
-  graphics_context_set_antialiased(ctx, true);
-  gpath_draw_outline(ctx, s_heart_path_ptr);
-}
+// void heart_layer_update_proc(Layer *my_layer, GContext* ctx) {
+//   // Fill the path:
+//   graphics_context_set_fill_color(ctx, GColorVividCerulean);
+//   gpath_draw_filled(ctx, s_heart_path_ptr);
+//   // Stroke the path:
+//   graphics_context_set_stroke_color(ctx, GColorBlack);
+//   graphics_context_set_stroke_width(ctx, 3);
+//   graphics_context_set_antialiased(ctx, true);
+//   gpath_draw_outline(ctx, s_heart_path_ptr);
+// }
 
 void up_layer_update_proc(Layer *my_layer, GContext* ctx) {
   // Fill the path:
@@ -133,7 +133,7 @@ void setup_my_path(void) {
   s_down_path_ptr = gpath_create(&BOLT_PATH_INFO_DOWN);
   s_right_path_ptr = gpath_create(&BOLT_PATH_INFO_RIGHT);
   s_right_panel_path_ptr = gpath_create(&RIGHT_PANEL_BG);
-  s_heart_path_ptr = gpath_create(&HEART_VERTICES);
+//   s_heart_path_ptr = gpath_create(&HEART_VERTICES);
 }
 
 
@@ -186,7 +186,7 @@ static void destroy_ui(void) {
   layer_destroy(down_arrow_layer);
   layer_destroy(right_arrow_layer);
   layer_destroy(right_panel_layer);
-  layer_destroy(heart_layer);
+//   layer_destroy(heart_layer);
 
 #ifndef PBL_PLATFORM_APLITE
   if(s_bitmap) {
@@ -390,9 +390,9 @@ static void initialise_ui(void) {
   setup_my_path();
   
   // Setup the heart
-  heart_layer = layer_create(GRect(80, 23, 144, 168));
-  layer_set_update_proc(heart_layer, heart_layer_update_proc);
-  layer_add_child(window_layer, (Layer *)heart_layer);
+//   heart_layer = layer_create(GRect(80, 23, 144, 168));
+//   layer_set_update_proc(heart_layer, heart_layer_update_proc);
+//   layer_add_child(window_layer, (Layer *)heart_layer);
   
   // Setup the right panel
   right_panel_layer = layer_create(GRect(0, 0, 144, 168));
