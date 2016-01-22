@@ -29,6 +29,7 @@ static char _categories[60][50];
 static TextLayer *s_textlayer_1;
 static TextLayer *s_textlayer_2;
 static TextLayer *s_textlayer_menu_item;
+static TextLayer *s_textlayer_rssnews;
 Layer *up_arrow_layer;
 Layer *down_arrow_layer;
 Layer *right_arrow_layer;
@@ -180,6 +181,7 @@ static void destroy_ui(void) {
   text_layer_destroy(s_textlayer_1);
   text_layer_destroy(s_textlayer_2);
   text_layer_destroy(s_textlayer_menu_item);
+  text_layer_destroy(s_textlayer_rssnews);
   layer_destroy(up_arrow_layer);
   layer_destroy(down_arrow_layer);
   layer_destroy(right_arrow_layer);
@@ -370,8 +372,12 @@ static void initialise_ui(void) {
   window_set_click_config_provider(s_window, (ClickConfigProvider) config_provider);
 
   Layer *window_layer = window_get_root_layer(s_window);
+
   
-//   GTextOverflowModeWordWrap
+  s_textlayer_rssnews = text_layer_create(GRect(10, 15, 116, 60));
+  text_layer_set_text(s_textlayer_rssnews, "rss-news");
+  text_layer_set_font(s_textlayer_rssnews, fonts_get_system_font(FONT_KEY_GOTHIC_24));
+  layer_add_child(window_layer, (Layer *)s_textlayer_rssnews);
   
   s_textlayer_menu_item = text_layer_create(GRect(0, 54, 116, 60));
   text_layer_set_text(s_textlayer_menu_item, "");
@@ -382,6 +388,11 @@ static void initialise_ui(void) {
   
   // Setup the arrows
   setup_my_path();
+  
+  // Setup the heart
+  heart_layer = layer_create(GRect(80, 23, 144, 168));
+  layer_set_update_proc(heart_layer, heart_layer_update_proc);
+  layer_add_child(window_layer, (Layer *)heart_layer);
   
   // Setup the right panel
   right_panel_layer = layer_create(GRect(0, 0, 144, 168));
@@ -402,11 +413,6 @@ static void initialise_ui(void) {
   right_arrow_layer = layer_create(GRect(127, 74, 144, 168));
   layer_set_update_proc(right_arrow_layer, right_layer_update_proc);
   layer_add_child(window_layer, (Layer *)right_arrow_layer);
-  
-  // Setup the heart
-  heart_layer = layer_create(GRect(10, 25, 144, 168));
-  layer_set_update_proc(heart_layer, heart_layer_update_proc);
-  layer_add_child(window_layer, (Layer *)heart_layer);
   
   show_menu_item(0);
   
