@@ -3,6 +3,7 @@ var BASE_URL = "https://rss-news.appspot.com/0/pebble/";
 var BASE_URL_V1 = "https://rss-news.appspot.com/1/pebble/";
 var BASE_READINGLIST_URL = "rss-news.appspot.com/pebble/";
 var USERNAME_KEY = 'USERNAME_KEY';
+var FAVORITES_KEY = 'FAVORITES_KEY';
 var CATEGORIES_HEADLINES_KEY = 'CATEGORIES_HEADLINES_KEY';
 
 Pebble.addEventListener('ready',
@@ -34,6 +35,57 @@ Pebble.addEventListener('webviewclosed',
     }
   }
 );
+
+function getFavorites() {
+	obj = localStorage.getItem(FAVORITES_KEY);
+	if (obj == null) {
+		obj = {};
+		localStorage.setItem(FAVORITES_KEY, JSON.stringify(obj));
+	} else {
+		obj = JSON.parse(obj);
+	}
+	return obj;
+}
+
+function updateFavorites(category) {
+	obj = getFavorites();
+	if (category in obj) {
+		obj[category] = obj[category] + 1;
+	} else {
+		obj[category] = 1;
+	}
+	localStorage.setItem(FAVORITES_KEY, JSON.stringify(obj));
+}
+
+function getKeyForValueAndNotInArray(obj, value, array) {
+	for (var key in obj) {
+		if (obj.hasOwnProperty(key)) {
+			if(obj[key] == value && key not in array) {
+				return key;
+			}
+		}
+	}
+	return null;
+}
+
+function getOrderedFavorites() {
+	obj = getFavorites();
+	values = [];
+	for (var key in obj) {
+		if (obj.hasOwnProperty(key)) {
+			values.push(obj[key]);
+		}
+	}
+	values.sort(function(a, b){return a-b});
+	
+	favs = [];
+	for (value in values) {
+		key = getKeyForValueAndNotInArray(obj, value, favs);
+		if (key != null) {
+			favs.push(key);
+		}
+	}
+}
 
 function sendMissingCategoriesErrorIfNull(categories) {
 	if (categories == null) {
@@ -76,6 +128,7 @@ Pebble.addEventListener('appmessage',
 			          	  	console.log("Headlines found for " + category);
 			          	  	obj.GET_HEADLINES = headlines[category].latest.content;
 			          	  	sendAnalytics(category);
+			          	  	updateFavorites(category);
 						} else {
 			          	  	console.log("No headlines found for " + category);
 			          	  	sendError("No headlines found for " + category);
@@ -154,6 +207,19 @@ function addToReadingList(url) {
   req.send(null);
 }
 
+function orderCategoriesAgainstFavs(categories) {
+	favs = getOrderedFavorites();
+	
+	newCategories = favs;
+	for (category in categories) {
+		if (newCategories.indexOf(category) == -1) {
+			newCategories.push(category);
+		}
+	}
+	
+	return newCategories;
+}
+
 function getDataForPebble() {
   var req = new XMLHttpRequest();
 
@@ -177,7 +243,7 @@ function getDataForPebble() {
       if (response.categories !== undefined) {
         console.log('latest lmd: ' + response.headlines.USA.latest.lmd);
         if (response.categories.length > 0) {
-            obj.GET_LATEST = response.categories;
+            obj.GET_LATEST = orderCategoriesAgainstFavs(response.categories);
             localStorage.setItem(CATEGORIES_HEADLINES_KEY, JSON.stringify(response.headlines));
         }
       }
