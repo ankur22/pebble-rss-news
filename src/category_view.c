@@ -7,7 +7,7 @@
 #define UP_MAIN_MENU 12
 #define GET_HEADLINES 10
 #define LINE_HEIGHT 20
-#define NUM_CHARS_IN_LINE 13
+#define NUM_CHARS_IN_LINE 12
 
 static Window *s_window;
 
@@ -29,6 +29,11 @@ static char _categories[60][50];
 static TextLayer *s_textlayer_1;
 static TextLayer *s_textlayer_2;
 static TextLayer *s_textlayer_menu_item;
+Layer *up_arrow_layer;
+Layer *down_arrow_layer;
+Layer *right_arrow_layer;
+Layer *right_panel_layer;
+Layer *heart_layer;
 
 
 static int _numLatestItems = 0;
@@ -36,6 +41,99 @@ static char *_latestArray[20];
 static char *_latestArrayUrl[20];
 static char *_latestArraySource[20];
 static char *_latestArrayCategory[20];
+
+
+static GPath *s_up_path_ptr = NULL;
+static GPath *s_down_path_ptr = NULL;
+static GPath *s_right_path_ptr = NULL;
+static GPath *s_right_panel_path_ptr = NULL;
+static GPath *s_heart_path_ptr = NULL;
+
+static const GPathInfo BOLT_PATH_INFO = {
+  .num_points = 3,
+  .points = (GPoint []) {{8, 0}, {0, 10}, {16, 10}}
+};
+
+static const GPathInfo BOLT_PATH_INFO_DOWN = {
+  .num_points = 3,
+  .points = (GPoint []) {{0, 0}, {16, 0}, {8, 10}}
+};
+
+static const GPathInfo BOLT_PATH_INFO_RIGHT = {
+  .num_points = 3,
+  .points = (GPoint []) {{0, 0}, {10, 8}, {0, 16}}
+};
+
+static const GPathInfo RIGHT_PANEL_BG = {
+  .num_points = 4,
+  .points = (GPoint []) {{121, 0}, {144, 0}, {144, 168}, {121, 168}}
+};
+
+static const GPathInfo HEART_VERTICES = {
+  .num_points = 8,
+  .points = (GPoint []) {{5, 0}, {10, 5}, {15, 0}, {20, 5}, {20, 10}, {10, 20}, {0, 10}, {0, 5}}
+};
+
+void heart_layer_update_proc(Layer *my_layer, GContext* ctx) {
+  // Fill the path:
+  graphics_context_set_fill_color(ctx, GColorVividCerulean);
+  gpath_draw_filled(ctx, s_heart_path_ptr);
+  // Stroke the path:
+  graphics_context_set_stroke_color(ctx, GColorBlack);
+  graphics_context_set_stroke_width(ctx, 3);
+  graphics_context_set_antialiased(ctx, true);
+  gpath_draw_outline(ctx, s_heart_path_ptr);
+}
+
+void up_layer_update_proc(Layer *my_layer, GContext* ctx) {
+  // Fill the path:
+  graphics_context_set_fill_color(ctx, GColorDarkGray);
+  gpath_draw_filled(ctx, s_up_path_ptr);
+  // Stroke the path:
+  graphics_context_set_stroke_color(ctx, GColorBlack);
+  graphics_context_set_stroke_width(ctx, 3);
+  graphics_context_set_antialiased(ctx, true);
+  gpath_draw_outline(ctx, s_up_path_ptr);
+}
+
+void down_layer_update_proc(Layer *my_layer, GContext* ctx) {
+  // Fill the path:
+  graphics_context_set_fill_color(ctx, GColorDarkGray);
+  gpath_draw_filled(ctx, s_down_path_ptr);
+  // Stroke the path:
+  graphics_context_set_stroke_color(ctx, GColorBlack);
+  graphics_context_set_stroke_width(ctx, 3);
+  graphics_context_set_antialiased(ctx, true);
+  gpath_draw_outline(ctx, s_down_path_ptr);
+}
+
+void right_layer_update_proc(Layer *my_layer, GContext* ctx) {
+  // Fill the path:
+  graphics_context_set_fill_color(ctx, GColorDarkGray);
+  gpath_draw_filled(ctx, s_right_path_ptr);
+  // Stroke the path:
+  graphics_context_set_stroke_color(ctx, GColorBlack);
+  graphics_context_set_stroke_width(ctx, 3);
+  graphics_context_set_antialiased(ctx, true);
+  gpath_draw_outline(ctx, s_right_path_ptr);
+}
+
+void right_panel_layer_update_proc(Layer *my_layer, GContext* ctx) {
+  // Fill the path:
+  graphics_context_set_fill_color(ctx, GColorLightGray);
+  gpath_draw_filled(ctx, s_right_panel_path_ptr);
+  // Stroke the path:
+  graphics_context_set_stroke_color(ctx, GColorLightGray);
+  gpath_draw_outline(ctx, s_right_panel_path_ptr);
+}
+
+void setup_my_path(void) {
+  s_up_path_ptr = gpath_create(&BOLT_PATH_INFO);
+  s_down_path_ptr = gpath_create(&BOLT_PATH_INFO_DOWN);
+  s_right_path_ptr = gpath_create(&BOLT_PATH_INFO_RIGHT);
+  s_right_panel_path_ptr = gpath_create(&RIGHT_PANEL_BG);
+  s_heart_path_ptr = gpath_create(&HEART_VERTICES);
+}
 
 
 static void show_animation() {
@@ -82,6 +180,11 @@ static void destroy_ui(void) {
   text_layer_destroy(s_textlayer_1);
   text_layer_destroy(s_textlayer_2);
   text_layer_destroy(s_textlayer_menu_item);
+  layer_destroy(up_arrow_layer);
+  layer_destroy(down_arrow_layer);
+  layer_destroy(right_arrow_layer);
+  layer_destroy(right_panel_layer);
+  layer_destroy(heart_layer);
 
 #ifndef PBL_PLATFORM_APLITE
   if(s_bitmap) {
@@ -196,6 +299,16 @@ static void handle_window_load(Window* window) {
 }
 
 static void show_menu_item(int item_number) {
+
+  if (item_number == 0) {
+    layer_set_hidden((Layer *)up_arrow_layer, true);
+  } else if (item_number == numMenuItems-1) {
+    layer_set_hidden((Layer *)down_arrow_layer, true);
+  } else {
+    layer_set_hidden((Layer *)up_arrow_layer, false);
+    layer_set_hidden((Layer *)down_arrow_layer, false);
+  }
+
   text_layer_set_text(s_textlayer_menu_item, _categories[item_number]);
 }
 
@@ -260,30 +373,42 @@ static void initialise_ui(void) {
   
 //   GTextOverflowModeWordWrap
   
-  s_textlayer_menu_item = text_layer_create(GRect(0, 52, 144, 60));
+  s_textlayer_menu_item = text_layer_create(GRect(0, 54, 116, 60));
   text_layer_set_text(s_textlayer_menu_item, "");
   text_layer_set_text_alignment(s_textlayer_menu_item, GTextAlignmentCenter);
-  text_layer_set_font(s_textlayer_menu_item, fonts_get_system_font(FONT_KEY_GOTHIC_28));
+  text_layer_set_font(s_textlayer_menu_item, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
   text_layer_set_overflow_mode(s_textlayer_menu_item, GTextOverflowModeWordWrap);
   layer_add_child(window_layer, (Layer *)s_textlayer_menu_item);
+  
+  // Setup the arrows
+  setup_my_path();
+  
+  // Setup the right panel
+  right_panel_layer = layer_create(GRect(0, 0, 144, 168));
+  layer_set_update_proc(right_panel_layer, right_panel_layer_update_proc);
+  layer_add_child(window_layer, (Layer *)right_panel_layer);
+  
+  // Setup the up arrow
+  up_arrow_layer = layer_create(GRect(124, 20, 144, 168));
+  layer_set_update_proc(up_arrow_layer, up_layer_update_proc);
+  layer_add_child(window_layer, (Layer *)up_arrow_layer);
+  
+  // Setup the down arrow
+  down_arrow_layer = layer_create(GRect(124, 143, 144, 168));
+  layer_set_update_proc(down_arrow_layer, down_layer_update_proc);
+  layer_add_child(window_layer, (Layer *)down_arrow_layer);
+  
+  // Setup the right arrow
+  right_arrow_layer = layer_create(GRect(127, 74, 144, 168));
+  layer_set_update_proc(right_arrow_layer, right_layer_update_proc);
+  layer_add_child(window_layer, (Layer *)right_arrow_layer);
+  
+  // Setup the heart
+  heart_layer = layer_create(GRect(10, 25, 144, 168));
+  layer_set_update_proc(heart_layer, heart_layer_update_proc);
+  layer_add_child(window_layer, (Layer *)heart_layer);
+  
   show_menu_item(0);
-  
-  
-// static ActionMenu *s_action_menu;
-// static ActionMenuLevel *s_root_level;
-//   
-// // Configure the ActionMenu Window about to be shown
-// ActionMenuConfig config = (ActionMenuConfig) {
-//   .root_level = s_root_level,
-//   .colors = {
-//     .background = GColorChromeYellow,
-//     .foreground = GColorBlack,
-//   },
-//   .align = ActionMenuAlignCenter
-// };
-// 
-// // Show the ActionMenu
-// s_action_menu = action_menu_open(&config);
   
   GFont s_res_droid_serif_28_bold = fonts_get_system_font(FONT_KEY_GOTHIC_14);
   
