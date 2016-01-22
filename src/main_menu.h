@@ -1,1 +1,0 @@
-void show_main_menu(char* latest);

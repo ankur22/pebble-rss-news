@@ -8,7 +8,10 @@
         "MESSAGE_TYPE": 0,
         "READING_LIST": 7,
         "SAVED_READING_LIST": 8,
-        "USERNAME": 9
+        "USERNAME": 9,
+        "GET_HEADLINES": 10,
+        "DOWN_MAIN_MENU": 11,
+        "UP_MAIN_MENU": 12
     },
     "capabilities": [
         "configurable"

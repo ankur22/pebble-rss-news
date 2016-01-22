@@ -35,23 +35,57 @@ Pebble.addEventListener('webviewclosed',
   }
 );
 
+function sendMissingCategoriesErrorIfNull(categories) {
+	if (categories == null) {
+        console.log('Categories is null');
+		sendError("Categories is null");
+		return true;
+	}
+	return false;
+}
+
 Pebble.addEventListener('appmessage',
   function(e) {
     console.log('Received message: ' + JSON.stringify(e.payload));
     console.log('Key received: ' + e.payload.MESSAGE_TYPE);
-    if (e.payload.MESSAGE_TYPE !== null) {
+    if (e.payload !== null) {
         switch (e.payload.MESSAGE_TYPE) {
           case 4:
               getDataForPebble();
               break;
           default:
-            if (e.payload['0'] !== null) {
-                console.log('READING_LIST request received: ' + e.payload.MESSAGE_TYPE);
-                addToReadingList(e.payload.MESSAGE_TYPE);
-            } else {
-                console.log('Unexpected key received');
-            }
-            break;
+			  var obj = {};
+          	  if ('GET_HEADLINES' in e.payload) {
+          	  		var category = e.payload['GET_HEADLINES'];
+					console.log('Retrieving headlines for ' + category);
+					headlines = localStorage.getItem(CATEGORIES_HEADLINES_KEY);
+					headlines = JSON.parse(headlines);
+					if (!sendMissingCategoriesErrorIfNull(headlines)) {
+						if (category in headlines) {
+			          	  	console.log("Headlines found for " + category);
+			          	  	obj.GET_HEADLINES = headlines[category].latest.content;
+						} else {
+			          	  	console.log("No headlines found for " + category);
+			          	  	sendError("No headlines found for " + category);
+			          	  	obj.ERROR = 'Error';
+						}
+					} else {
+						obj.ERROR = 'Error';
+					}
+					sendPebbleResponseFromRssNews(obj);
+			  } else if('READING_LIST' in e.payload) {
+		            if (e.payload.READING_LIST !== null) {
+        		        console.log('READING_LIST request received: ' + e.payload.READING_LIST);
+        	    	    addToReadingList(e.payload.READING_LIST);
+		            } else {
+              		  console.log('Unexpected key received');
+		            }
+          	  } else {
+          	  	console.log('Could not identify key from watch');
+          	  	sendError("Could not identify key from watch");
+          	  	obj.ERROR = 'Error';
+          	  }
+			  break;
         }
     } else {
         console.log('Message type is null');
@@ -122,21 +156,19 @@ function getDataForPebble() {
     if(req.status == 200) {
       var obj = {};
       var response = JSON.parse(req.responseText);
+      if (response.username !== undefined) {
+        console.log('username: ' + response.username);
+        if (response.username.length > 0) {
+            localStorage.setItem(USERNAME_KEY, response.username);
+        }
+      }
       if (response.categories !== undefined) {
         console.log('latest lmd: ' + response.headlines.USA.latest.lmd);
         if (response.categories.length > 0) {
             obj.GET_LATEST = response.categories;
-            localStorage.setItem(CATEGORIES_HEADLINES_KEY, response);
+            localStorage.setItem(CATEGORIES_HEADLINES_KEY, JSON.stringify(response.headlines));
         }
       }
-      if (response.username !== undefined) {
-        console.log('username: ' + response.username);
-        if (response.username.length > 0) {
-            obj.USERNAME = response.username;
-            localStorage.setItem(USERNAME_KEY, response.username);
-        }
-      }
-      obj.ALL = 'all done';
       sendPebbleResponseFromRssNews(obj);
     } else {
       var obj = {};

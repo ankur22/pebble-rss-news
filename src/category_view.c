@@ -1,16 +1,15 @@
 #include <pebble.h>
 #include "category_view.h"
-// #include "main_menu.h"
-// #include "latest_view.h"
+#include "latest_view.h"
 
 #define MESSAGE_TYPE 0
-#define SAVED_READING_LIST 8
-#define READING_LIST 7
+#define DOWN_MAIN_MENU 11
+#define UP_MAIN_MENU 12
+#define GET_HEADLINES 10
 #define LINE_HEIGHT 20
 #define NUM_CHARS_IN_LINE 26
 
 static Window *s_window;
-static MenuLayer *s_menu_layer;
 
 #ifndef PBL_PLATFORM_APLITE
 static StatusBarLayer *s_status_bar;
@@ -25,17 +24,22 @@ static BitmapLayer *s_bitmap_layer;
 static int numMenuItems = 0;
 static int selectedMenuCell = 0;
 
-static char **_categories;
-static char **_username;
+static char _categories[60][50];
 
 static GFont s_res_droid_serif_28_bold;
 static TextLayer *s_textlayer_1;
 static TextLayer *s_textlayer_2;
+static TextLayer *s_textlayer_menu_item;
 
-static GBitmap *bbc_image1;
-static GBitmap *bbc_image2;
-static GBitmap *bbc_image3;
 static int imageNumber = 0;
+
+
+static int _numLatestItems = 0;
+static char *_latestArray[20];
+static char *_latestArrayUrl[20];
+static char *_latestArraySource[20];
+static char *_latestArrayCategory[20];
+
 
 static void show_animation() {
 #ifndef PBL_PLATFORM_APLITE
@@ -125,155 +129,8 @@ static int16_t menu_get_header_height_callback(MenuLayer *menu_layer, uint16_t s
   return MENU_CELL_BASIC_HEADER_HEIGHT;
 }
 
-static GBitmap* getImageIfForSource(char* source) {
-    if (strcmp(source, "BBC News - Technol...") == 0 || strcmp(source, "BBC News - Home") == 0) {
-        return gbitmap_create_with_resource(RESOURCE_ID_BBC_LOGO);
-    } else if (strcmp(source, "TechCrunch") == 0) {
-        return gbitmap_create_with_resource(RESOURCE_ID_TC_LOGO);
-    } else if (strcmp(source, "RT - Daily news") == 0) {
-        return gbitmap_create_with_resource(RESOURCE_ID_RT_LOGO);
-    } else if (strcmp(source, "New on MIT Technol...") == 0) {
-        return gbitmap_create_with_resource(RESOURCE_ID_MIT_LOGO);
-    } else if (strcmp(source, "Wired.co.uk") == 0) {
-        return gbitmap_create_with_resource(RESOURCE_ID_WIRED_LOGO);
-    } else if (strcmp(source, "TIME") == 0) {
-        return gbitmap_create_with_resource(RESOURCE_ID_TIME_LOGO);
-    } else if (strcmp(source, "The New Yorker: Bu...") == 0 || strcmp(source, "The New Yorker: Hu...") == 0 || strcmp(source, "The New Yorker: Ne...") == 0 || strcmp(source, "The New Yorker: Sc...") == 0) {
-        return gbitmap_create_with_resource(RESOURCE_ID_TNY_LOGO);
-    } else if (strcmp(source, "RollingStone.com: ...") == 0) {
-        return gbitmap_create_with_resource(RESOURCE_ID_RS_LOGO);
-    } else if (strcmp(source, "Al Jazeera English") == 0) {
-        return gbitmap_create_with_resource(RESOURCE_ID_AJ_LOGO);
-    } else if (strcmp(source, "Forbes - Tech") == 0 || strcmp(source, "Forbes.com: Most p...") == 0) {
-        return gbitmap_create_with_resource(RESOURCE_ID_FORBES_LOGO);
-    } else if (strcmp(source, "Engadget RSS Feed") == 0) {
-        return gbitmap_create_with_resource(RESOURCE_ID_ENGADGET_LOGO);
-    } else if (strcmp(source, "CNN.com - Top Sto...") == 0 || strcmp(source, "CNN.com - Top Stor...") == 0) {
-        return gbitmap_create_with_resource(RESOURCE_ID_CNN_LOGO);
-    } else if (strcmp(source, "XINHUANEWS") == 0) {
-        return gbitmap_create_with_resource(RESOURCE_ID_XN_LOGO);
-    } else if (strcmp(source, "Sports: Sports New...") == 0) {
-        return gbitmap_create_with_resource(RESOURCE_ID_WP_LOGO);
-    } else if (strcmp(source, "Bits") == 0 || strcmp(source, "NYT > Technology") == 0 || strcmp(source, "NYT > Personal Tec...") == 0 || strcmp(source, "NYT > Internationa...") == 0) {
-        return gbitmap_create_with_resource(RESOURCE_ID_NYT_LOGO);
-    } else if (strcmp(source, "CNET News") == 0) {
-        return gbitmap_create_with_resource(RESOURCE_ID_CNET_LOGO);
-    } else if (strcmp(source, "InfoQ") == 0) {
-        return gbitmap_create_with_resource(RESOURCE_ID_INFOQ_LOGO);
-    } else if (strcmp(source, "xkcd.com") == 0) {
-        return gbitmap_create_with_resource(RESOURCE_ID_XKCD_LOGO);
-    } else if (strcmp(source, "Dilbert Daily Stri...") == 0) {
-        return gbitmap_create_with_resource(RESOURCE_ID_DILBERT_LOGO);
-    } else if (strcmp(source, "WSJ.com: WSJD") == 0) {
-        return gbitmap_create_with_resource(RESOURCE_ID_WSJ_LOGO);
-    } else if (strcmp(source, "The Oatmeal - Comi...") == 0) {
-        return gbitmap_create_with_resource(RESOURCE_ID_OATMEAL_LOGO);
-    } else if (strcmp(source, "Empire News") == 0) {
-        return gbitmap_create_with_resource(RESOURCE_ID_EMPIRE_LOGO);
-    } else if (strcmp(source, "JPost.com - New-Tech") == 0 || strcmp(source, "JPost.com - Home") == 0) {
-        return gbitmap_create_with_resource(RESOURCE_ID_JPOST_LOGO);
-    } else if (strcmp(source, "- Sport RSS Feed") == 0 || strcmp(source, "- Arts and Enterta...") == 0 || strcmp(source, "- News RSS Feed") == 0) {
-        return gbitmap_create_with_resource(RESOURCE_ID_INDEPENDENT_LOGO);
-    } else if (strcmp(source, "Gizmodo") == 0) {
-        return gbitmap_create_with_resource(RESOURCE_ID_GIZMODO_LOGO);
-    } else if (strcmp(source, "Business and finan...") == 0 || strcmp(source, "Science and techno...") == 0) {
-        return gbitmap_create_with_resource(RESOURCE_ID_ECONOMIST_LOGO);
-    } else if (strcmp(source, "Technology - The G...") == 0 || strcmp(source, "Network Front - Th...") == 0) {
-        return gbitmap_create_with_resource(RESOURCE_ID_GUARDIAN_LOGO);
-    } else if (strcmp(source, "World News - Break...") == 0) {
-        return gbitmap_create_with_resource(RESOURCE_ID_SKY_LOGO);
-    } else if (strcmp(source, "ESPN.com") == 0) {
-        return gbitmap_create_with_resource(RESOURCE_ID_ESPN_LOGO);
-    } else if (strcmp(source, "The Verge -  All P...") == 0) {
-        return gbitmap_create_with_resource(RESOURCE_ID_VERGE_LOGO);
-    } else if (strcmp(source, "Penny Arcade") == 0) {
-        return gbitmap_create_with_resource(RESOURCE_ID_PA_LOGO);
-    } else if (strcmp(source, "Repubblica.it > Ho...") == 0) {
-        return gbitmap_create_with_resource(RESOURCE_ID_RIT_LOGO);
-    } else if (strcmp(source, "SPIEGEL ONLINE - S...") == 0) {
-        return gbitmap_create_with_resource(RESOURCE_ID_SPIEGEL_LOGO);
-    } else if (strcmp(source, "CNN CHILE") == 0) {
-        return gbitmap_create_with_resource(RESOURCE_ID_CNNC_LOGO);
-    } else if (strcmp(source, "Actu : Toute l'act...") == 0) {
-        return gbitmap_create_with_resource(RESOURCE_ID_LMFR_LOGO);
-    } else if (strcmp(source, "Lonely Planet blog") == 0) {
-        return gbitmap_create_with_resource(RESOURCE_ID_LP_LOGO);
-    } else if (strcmp(source, "World news") == 0 || strcmp(source, "Finance - Business...") == 0 || strcmp(source, "Sport") == 0) {
-        return gbitmap_create_with_resource(RESOURCE_ID_TELEGRAPH_LOGO);
-    } else if (strcmp(source, "Kotaku") == 0) {
-        return gbitmap_create_with_resource(RESOURCE_ID_KOTAKU_LOGO);
-    } else if (strcmp(source, "Times of India") == 0 || strcmp(source, "Technology News, L...") == 0 || strcmp(source, "The Times of India...") == 0) {
-        return gbitmap_create_with_resource(RESOURCE_ID_TOI_LOGO);
-    } else if (strcmp(source, "Video Game News at...") == 0 || strcmp(source, "New Video Game Rel...") == 0 || strcmp(source, "Game Reviews on Gi...") == 0) {
-        return gbitmap_create_with_resource(RESOURCE_ID_GB_LOGO);
-    } else if (strcmp(source, "TechRadar: Technol...") == 0 || strcmp(source, "Techradar - All th...") == 0) {
-        return gbitmap_create_with_resource(RESOURCE_ID_TR_LOGO);
-    } else if (strcmp(source, "Reuters: Top News") == 0 || strcmp(source, "Reuters: Technolog...") == 0) {
-        return gbitmap_create_with_resource(RESOURCE_ID_REUTERS_LOGO);
-    } else if (strcmp(source, "GameTrailers.com V...") == 0 || strcmp(source, "http://www.gametra...") == 0 || strcmp(source, "GameTrailers.com P...") == 0 || strcmp(source, "GameTrailers.com R...") == 0 || strcmp(source, "GameTrailers.com X...") == 0) {
-        return gbitmap_create_with_resource(RESOURCE_ID_GT_LOGO);
-    } else {
-        return gbitmap_create_with_resource(RESOURCE_ID_RSS_NEWS_LOGO);
-    }
-}
-
-static GBitmap* getImage(char* source) {
-  ++imageNumber;
-  if (imageNumber > 3) {
-    imageNumber = 1;
-  }
-
-  GBitmap* image = NULL;
-  if (imageNumber == 1) {
-    image = getImageIfForSource(source);
-    if (image != NULL) {
-        gbitmap_destroy(bbc_image1);
-        bbc_image1 = image;
-    }
-  } else if (imageNumber == 2) {
-    image = getImageIfForSource(source);
-    if (image != NULL) {
-        gbitmap_destroy(bbc_image2);
-        bbc_image2 = image;
-    }
-  } else if (imageNumber == 3) {
-    image = getImageIfForSource(source);
-    if (image != NULL) {
-        gbitmap_destroy(bbc_image3);
-        bbc_image3 = image;
-    }
-  }
-  return image;
-}
-
 #ifndef PBL_PLATFORM_APLITE
 static void menu_draw_row_callback_basalt(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
-//   GBitmap* image = getImage(_latestSource[cell_index->row]);
-//   if (image != NULL) {
-// #ifdef PBL_ROUND
-//     GRect bounds = GRect(25, 8, 48, 48);
-// #else
-//     GRect bounds = GRect(5, 8, 48, 48);
-// #endif
-//     graphics_draw_bitmap_in_rect(ctx, image, bounds);
-//   }
-
-//     graphics_context_set_text_color(ctx, GColorLightGray);
-// #ifdef PBL_ROUND
-//     GRect source_bounds = GRect(79, 8, 90, 20);
-// #else
-//     GRect source_bounds = GRect(59, 8, 90, 20);
-// #endif
-//     graphics_draw_text(ctx, _latestSource[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), source_bounds, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
-
-//     graphics_context_set_text_color(ctx, GColorVividCerulean);
-// #ifdef PBL_ROUND
-//     GRect cat_bounds = GRect(79, 37, 90, 10);
-// #else
-//     GRect cat_bounds = GRect(59, 37, 90, 10);
-// #endif
-//     graphics_draw_text(ctx, _latestCategory[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), cat_bounds, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
-
     if (selectedMenuCell == cell_index->row) {
         graphics_context_set_text_color(ctx, GColorWhite);
     } else {
@@ -288,19 +145,11 @@ static void menu_draw_row_callback_basalt(GContext* ctx, const Layer *cell_layer
 }
 #else
 static void menu_draw_row_callback_aplite(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
-//     GBitmap* image = getImage(_latestSource[cell_index->row]);
-//     if (image != NULL) {
-//         GRect bounds = GRect(5, 8, 48, 48);
-//         graphics_draw_bitmap_in_rect(ctx, image, bounds);
-//     }
-
     if (selectedMenuCell == cell_index->row) {
         graphics_context_set_text_color(ctx, GColorWhite);
     } else {
         graphics_context_set_text_color(ctx, GColorBlack);
     }
-//     graphics_draw_text(ctx, _latestSource[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(59, 8, 90, 20), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
-//     graphics_draw_text(ctx, _latestCategory[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(59, 37, 90, 10), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
     graphics_draw_text(ctx, _categories[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD), GRect(5, 8, 137, row_height(cell_index)), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
 }
 #endif
@@ -334,16 +183,16 @@ static void menu_draw_separator(GContext *ctx, const Layer *cell_layer, MenuInde
   }
 }
 
-static void do_post(char *url) {
+static void do_post(char *category, int key) {
     if (bluetooth_connection_service_peek()) {
-      APP_LOG(APP_LOG_LEVEL_INFO, "Phone is connected!");
+      APP_LOG(APP_LOG_LEVEL_INFO, "CatView: Phone is connected!");
 
       DictionaryIterator *iter;
       app_message_outbox_begin(&iter);
-      dict_write_cstring(iter, MESSAGE_TYPE, url);
+      dict_write_cstring(iter, key, category);
       app_message_outbox_send();
     } else {
-      APP_LOG(APP_LOG_LEVEL_INFO, "Phone is not connected!");
+      APP_LOG(APP_LOG_LEVEL_INFO, "CatView: Phone is not connected!");
       hide_animation();
       show_no_con_error();
     }
@@ -353,7 +202,7 @@ static void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, v
   switch (cell_index->section) {
     case 0:
       if (numMenuItems > 0) {
-        do_post(_categories[cell_index->row]);
+        do_post(_categories[cell_index->row], GET_HEADLINES);
         APP_LOG(APP_LOG_LEVEL_DEBUG, _categories[cell_index->row]);
         light_enable_interaction();
         show_animation();
@@ -385,13 +234,9 @@ static void menu_selection_changed(struct MenuLayer *menu_layer, MenuIndex new_i
 
 static void destroy_ui(void) {
   window_destroy(s_window);
-  menu_layer_destroy(s_menu_layer);
   text_layer_destroy(s_textlayer_1);
   text_layer_destroy(s_textlayer_2);
-
-  gbitmap_destroy(bbc_image1);
-  gbitmap_destroy(bbc_image2);
-  gbitmap_destroy(bbc_image3);
+  text_layer_destroy(s_textlayer_menu_item);
 
 #ifndef PBL_PLATFORM_APLITE
   if(s_bitmap) {
@@ -426,12 +271,74 @@ static void timer_handler(void *context) {
 }
 #endif
 
+static int split_string(char *fullString, char **array, char **arrayUrl, char **arraySource, char **arrayCategory) {
+  int num = 0;
+  char *p;
+  if (fullString != NULL && strlen(fullString) > 0) {
+    p = strtok(fullString,"|");
+    while(p != NULL) {
+      array[num] = p;
+      p = strtok(NULL, "|");
+      arrayUrl[num] = p;
+      p = strtok(NULL, "|");
+      arraySource[num] = p;
+      p = strtok(NULL, "|");
+      arrayCategory[num] = p;
+      p = strtok(NULL, "|");
+      ++num;
+    }
+  }
+  return num;
+}
+
+static void showLatestView(char* latest) {
+  _numLatestItems = split_string(latest, _latestArray, _latestArrayUrl, _latestArraySource, _latestArrayCategory);
+  
+//   hide_category_view();
+  
+  show_latest_view(_latestArray, _latestArrayUrl, _latestArraySource, _latestArrayCategory, _numLatestItems);
+  
+  light_enable_interaction();
+}
+
+static void inbox_received_callback(DictionaryIterator *iterator, void *context) {
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "Message recieved!");
+  hide_animation();
+  
+  // Get the first pair
+  Tuple *t = dict_read_first(iterator);
+
+  // Process all pairs present
+  while (t != NULL) {
+    // Long lived buffer
+    static char s_buffer[64];
+
+    // Process this pair's key
+    switch (t->key) {
+      case GET_HEADLINES:
+        snprintf(s_buffer, sizeof(s_buffer), "GET_HEADLINES Received '%s'", t->value->cstring);
+        APP_LOG(APP_LOG_LEVEL_DEBUG, s_buffer);
+        showLatestView(t->value->cstring);
+        break;
+      default:
+        snprintf(s_buffer, sizeof(s_buffer), "Unidentified Received '%s'", t->value->cstring);
+        APP_LOG(APP_LOG_LEVEL_DEBUG, s_buffer);
+        break;
+    }
+
+    // Get next pair, if any
+    t = dict_read_next(iterator);
+  }
+}
+
 static void handle_window_unload(Window* window) {
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "unload");
   destroy_ui();
 }
 
 static void handle_window_appear(Window* window) {
   APP_LOG(APP_LOG_LEVEL_DEBUG, "appear");
+  app_message_register_inbox_received(inbox_received_callback);
   hide_animation();
 }
 
@@ -445,19 +352,57 @@ static void handle_window_load(Window* window) {
   hide_animation();
 }
 
+static void show_menu_item(int item_number) {
+  text_layer_set_text(s_textlayer_menu_item, _categories[item_number]);
+}
+
+static void select_single_click_handler(ClickRecognizerRef recognizer, void *context) {
+    hide_no_con_error();
+    
+    do_post(_categories[selectedMenuCell], GET_HEADLINES);
+    APP_LOG(APP_LOG_LEVEL_DEBUG, _categories[selectedMenuCell]);
+    light_enable_interaction();
+    show_animation();
+}
+
 static void down_single_click_handler(ClickRecognizerRef recognizer, void *context) {
     hide_no_con_error();
+    
+    ++selectedMenuCell;
+    
+    if (selectedMenuCell >= numMenuItems) {
+	    selectedMenuCell = numMenuItems - 1;
+    }
+    
+    show_menu_item(selectedMenuCell);
+    
+    APP_LOG(APP_LOG_LEVEL_DEBUG, _categories[selectedMenuCell]);
+    light_enable_interaction();
+}
+
+static void up_single_click_handler(ClickRecognizerRef recognizer, void *context) {
+    hide_no_con_error();
+    
+    --selectedMenuCell;
+    
+    if (selectedMenuCell < 0) {
+	    selectedMenuCell = 0;
+    }
+    
+    show_menu_item(selectedMenuCell);
+    
+    APP_LOG(APP_LOG_LEVEL_DEBUG, _categories[selectedMenuCell]);
+    light_enable_interaction();
 }
 
 static void config_provider(Window *window) {
-  window_single_click_subscribe(BUTTON_ID_SELECT, down_single_click_handler);
+	window_single_click_subscribe(BUTTON_ID_SELECT, select_single_click_handler);
+	window_single_click_subscribe(BUTTON_ID_DOWN, down_single_click_handler);
+	window_single_click_subscribe(BUTTON_ID_UP, up_single_click_handler);
 }
 
 static void initialise_ui(void) {
   s_window = window_create();
-//#ifdef PBL_PLATFORM_APLITE
-//  window_set_fullscreen(s_window, true);
-//#endif
 
   window_set_window_handlers(s_window, (WindowHandlers) {
     .load = handle_window_load,
@@ -470,39 +415,15 @@ static void initialise_ui(void) {
 
   Layer *window_layer = window_get_root_layer(s_window);
 
-#ifdef PBL_ROUND
-  s_menu_layer = menu_layer_create(GRect(0, 0, 180, 180));
-#else
-  s_menu_layer = menu_layer_create(GRect(0, 0, 144, 152));
-#endif
-  menu_layer_set_callbacks(s_menu_layer, NULL, (MenuLayerCallbacks){
-    .get_num_sections = menu_get_num_sections_callback,
-    .get_num_rows = menu_get_num_rows_callback,
-    .get_header_height = menu_get_header_height_callback,
-    .get_cell_height = wp_cell_height,
-    .draw_header = menu_draw_header_callback,
-    .draw_row = menu_draw_row_callback,
-    .select_click = menu_select_callback,
-    .draw_separator = menu_draw_separator,
-    .get_separator_height = get_menu_separator_height,
-    .selection_changed = menu_selection_changed,
-  });
-  menu_layer_set_click_config_onto_window(s_menu_layer, s_window);
-  layer_add_child(window_layer, (Layer *)s_menu_layer);
-
   s_res_droid_serif_28_bold = fonts_get_system_font(FONT_KEY_GOTHIC_14);
   
 #ifndef PBL_PLATFORM_APLITE
-  // Set up the status bar last to ensure it is on top of other Layers
-  s_status_bar = status_bar_layer_create();
-  layer_add_child(window_layer, status_bar_layer_get_layer(s_status_bar));
-
 #ifdef PBL_ROUND
   s_bitmap_layer = bitmap_layer_create(GRect(57, 52, 64, 64));
 #else
   s_bitmap_layer = bitmap_layer_create(GRect(37, 52, 64, 64));
 #endif
-  layer_insert_above_sibling(bitmap_layer_get_layer(s_bitmap_layer), (Layer *)s_menu_layer);
+  layer_add_child(window_layer, bitmap_layer_get_layer(s_bitmap_layer));
 
   // Create sequence
   s_sequence = gbitmap_sequence_create_with_resource(RESOURCE_ID_LOADING_ANIMATION);
@@ -513,10 +434,10 @@ static void initialise_ui(void) {
   hide_animation();
 #else
   s_textlayer_2 = text_layer_create(GRect(0, 52, 144, 27));
-  text_layer_set_text(s_textlayer_2, "Saving, please wait");
+  text_layer_set_text(s_textlayer_2, "Loading, please wait");
   text_layer_set_text_alignment(s_textlayer_2, GTextAlignmentCenter);
   text_layer_set_font(s_textlayer_2, s_res_droid_serif_28_bold);
-  layer_insert_above_sibling((Layer *)s_textlayer_2, (Layer *)s_menu_layer);
+  layer_add_child(window_layer, (Layer *)s_textlayer_2);
   hide_animation();
 #endif
 
@@ -528,23 +449,31 @@ static void initialise_ui(void) {
   text_layer_set_text(s_textlayer_1, "Currently unavailable");
   text_layer_set_text_alignment(s_textlayer_1, GTextAlignmentCenter);
   text_layer_set_font(s_textlayer_1, s_res_droid_serif_28_bold);
-  layer_insert_above_sibling((Layer *)s_textlayer_1, (Layer *)s_menu_layer);
+  layer_add_child(window_layer, (Layer *)s_textlayer_1);
   hide_no_con_error();
 
-  bbc_image1 = gbitmap_create_with_resource(RESOURCE_ID_BBC_LOGO);
-  bbc_image2 = gbitmap_create_with_resource(RESOURCE_ID_BBC_LOGO);
-  bbc_image3 = gbitmap_create_with_resource(RESOURCE_ID_BBC_LOGO);
+  s_textlayer_menu_item = text_layer_create(GRect(0, 52, 144, 27));
+  text_layer_set_text(s_textlayer_menu_item, "");
+  text_layer_set_text_alignment(s_textlayer_menu_item, GTextAlignmentCenter);
+  text_layer_set_font(s_textlayer_menu_item, s_res_droid_serif_28_bold);
+  layer_add_child(window_layer, (Layer *)s_textlayer_menu_item);
+  show_menu_item(0);
   
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "Initialised latest view ui");
-}
+#ifndef PBL_PLATFORM_APLITE
+  // Set up the status bar last to ensure it is on top of other Layers
+  s_status_bar = status_bar_layer_create();
+  layer_add_child(window_layer, status_bar_layer_get_layer(s_status_bar));
+#endif
 
-static void inbox_received_callback(DictionaryIterator *iterator, void *context) {
-  hide_animation();
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "Initialised latest view ui");
 }
 
 void show_category_view(char **categories, int num) {
   numMenuItems = num;
-  _categories = categories;
+  
+  for (int i = 0; i < num; ++i) {
+  	strcpy(_categories[i], categories[i]);
+  }
 
   app_message_register_inbox_received(inbox_received_callback);
 
@@ -556,10 +485,4 @@ void show_category_view(char **categories, int num) {
 
 void hide_category_view(void) {
   window_stack_remove(s_window, true);
-}
-
-void reset_category_view(void) {
-  //numMenuItems = 0;
-  selectedMenuCell = 0;
-  //menu_layer_reload_data(s_menu_layer);
 }

@@ -1,9 +1,6 @@
 #include <pebble.h>
 #include "latest_view.h"
-// #include "main_menu.h"
 
-#define MESSAGE_TYPE 0
-#define SAVED_READING_LIST 8
 #define READING_LIST 7
 #define LINE_HEIGHT 15
 #define NUM_CHARS_IN_LINE 26
@@ -12,32 +9,31 @@ static Window *s_window;
 static MenuLayer *s_menu_layer;
 
 #ifndef PBL_PLATFORM_APLITE
-static StatusBarLayer *s_status_bar;
+StatusBarLayer *s_status_bar;
 
-static GBitmapSequence *s_sequence;
-static GBitmap *s_bitmap;
-static BitmapLayer *s_bitmap_layer;
+GBitmapSequence *s_sequence;
+GBitmap *s_bitmap;
+BitmapLayer *s_bitmap_layer;
 #endif
 
 #define MAX_CELL_HEIGHT 95
 #define NUM_MENU_SECTIONS 1
-static int numMenuItems = 0;
-static int selectedMenuCell = 0;
+int numMenuItems = 0;
+int selectedMenuCell = 0;
 
-static char **_latest;
-static char **_latestUrl;
-static char **_latestSource;
-static char **_latestCategory;
-static char **_username;
+char **_latest;
+char **_latestUrl;
+char **_latestSource;
+char **_latestCategory;
 
-static GFont s_res_droid_serif_28_bold;
-static TextLayer *s_textlayer_1;
-static TextLayer *s_textlayer_2;
+GFont s_res_droid_serif_28_bold;
+TextLayer *s_textlayer_1;
+TextLayer *s_textlayer_2;
 
-static GBitmap *bbc_image1;
-static GBitmap *bbc_image2;
-static GBitmap *bbc_image3;
-static int imageNumber = 0;
+GBitmap *bbc_image1;
+GBitmap *bbc_image2;
+GBitmap *bbc_image3;
+int imageNumber = 0;
 
 static void show_animation() {
 #ifndef PBL_PLATFORM_APLITE
@@ -342,7 +338,7 @@ static void do_post(char *url) {
 
       DictionaryIterator *iter;
       app_message_outbox_begin(&iter);
-      dict_write_cstring(iter, MESSAGE_TYPE, url);
+      dict_write_cstring(iter, READING_LIST, url);
       app_message_outbox_send();
     } else {
       APP_LOG(APP_LOG_LEVEL_INFO, "Phone is not connected!");
@@ -430,6 +426,7 @@ static void timer_handler(void *context) {
 #endif
 
 static void handle_window_unload(Window* window) {
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "unload");
   destroy_ui();
 }
 
@@ -440,6 +437,7 @@ static void handle_window_appear(Window* window) {
 
 static void handle_window_disappear(Window* window) {
   APP_LOG(APP_LOG_LEVEL_DEBUG, "disappear");
+  hide_latest_view();
   hide_animation();
 }
 
@@ -546,6 +544,7 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
 }
 
 void show_latest_view(char **latest, char **latestUrl, char **latestSource, char **latestCategory, int num) {
+  selectedMenuCell = 0;
   numMenuItems = num;
   _latest = latest;
   _latestUrl = latestUrl;
@@ -562,10 +561,4 @@ void show_latest_view(char **latest, char **latestUrl, char **latestSource, char
 
 void hide_latest_view(void) {
   window_stack_remove(s_window, true);
-}
-
-void reset_latest_view(void) {
-  //numMenuItems = 0;
-  selectedMenuCell = 0;
-  //menu_layer_reload_data(s_menu_layer);
 }

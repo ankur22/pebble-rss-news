@@ -1,6 +1,6 @@
 #include <pebble.h>
 #include "splash_screen.h"
-#include "main_menu.h"
+#include "category_view.h"
   
 #define MESSAGE_TYPE 0
 #define GET_LATEST 1
@@ -8,7 +8,6 @@
 #define ALL 4
 #define HELLO 5
 #define ERROR 6
-#define READING_LIST 7
 #define USERNAME 9
 
 static Window *s_window;
@@ -29,7 +28,11 @@ static TextLayer *s_textlayer_loading;
 #endif
 
 static char* _latest;
-static char* _username;
+
+
+static int _numCategories = 0;
+static char *_categoryArray[60];
+
 
 #ifndef PBL_PLATFORM_APLITE
 static void timer_handler(void *context) {
@@ -141,6 +144,7 @@ static void destroy_ui(void) {
 }
 
 static void handle_window_unload(Window* window) {
+  APP_LOG(APP_LOG_LEVEL_INFO, "Unloading window");
   destroy_ui();
 }
 
@@ -160,6 +164,31 @@ static void sendDoGetMessageIfBluetoothConnected() {
   }
 }
 
+
+static int split_string(char *fullString, char **array) {
+  int num = 0;
+  char *p;
+  if (fullString != NULL && strlen(fullString) > 0) {
+    p = strtok(fullString,"|");
+    while(p != NULL) {
+      array[num] = p;
+      p = strtok(NULL, "|");
+      ++num;
+    }
+  }
+  return num;
+}
+
+static void show_main_menu(char* categories) {
+  _numCategories = split_string(categories, _categoryArray);
+
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "Loaded main menu");
+
+  show_category_view(_categoryArray, _numCategories);
+  light_enable_interaction();
+}
+
+
 static void displayMainMenu(char *_latest) {
   hide_splash_screen();
   show_main_menu(_latest);
@@ -175,20 +204,15 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
 
   // Process all pairs present
   while (t != NULL) {
-    // Long lived buffer
-    static char s_buffer[64];
+    char s_buffer[64];
 
     // Process this pair's key
     switch (t->key) {
-      case ALL:
-        snprintf(s_buffer, sizeof(s_buffer), "ALL Received '%s'", t->value->cstring);
-        APP_LOG(APP_LOG_LEVEL_DEBUG, s_buffer);
-        displayMainMenu(_latest);
-        break;
       case GET_LATEST:
         snprintf(s_buffer, sizeof(s_buffer), "GET_LATEST Received '%s'", t->value->cstring);
         APP_LOG(APP_LOG_LEVEL_DEBUG, s_buffer);
         _latest = t->value->cstring;
+        displayMainMenu(_latest);
         break;
       case HELLO:
         snprintf(s_buffer, sizeof(s_buffer), "HELLO Received '%s'", t->value->cstring);
@@ -199,11 +223,6 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
         snprintf(s_buffer, sizeof(s_buffer), "ERROR Received '%s'", t->value->cstring);
         APP_LOG(APP_LOG_LEVEL_ERROR, s_buffer);
         show_no_con_error();
-        break;
-      case USERNAME:
-        snprintf(s_buffer, sizeof(s_buffer), "USERNAME Received '%s'", t->value->cstring);
-        APP_LOG(APP_LOG_LEVEL_DEBUG, s_buffer);
-        _username = t->value->cstring;
         break;
       default:
         snprintf(s_buffer, sizeof(s_buffer), "Unidentified Received '%s'", t->value->cstring);
