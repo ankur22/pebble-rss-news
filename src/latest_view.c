@@ -180,7 +180,7 @@ static GBitmap* getImageIfForSource(char* source) {
         return gbitmap_create_with_resource(RESOURCE_ID_GUARDIAN_LOGO);
     } else if (strcmp(source, "World News - Break...") == 0) {
         return gbitmap_create_with_resource(RESOURCE_ID_SKY_LOGO);
-    } else if (strcmp(source, "ESPN.com") == 0) {
+    } else if (strcmp(source, "ESPN.com") == 0 || strcmp(source, "ESPN.com - NBA") == 0 || strcmp(source, "ESPN.com - NFL") == 0 || strcmp(source, "ESPN.com - MLB") == 0) {
         return gbitmap_create_with_resource(RESOURCE_ID_ESPN_LOGO);
     } else if (strcmp(source, "The Verge -  All P...") == 0) {
         return gbitmap_create_with_resource(RESOURCE_ID_VERGE_LOGO);

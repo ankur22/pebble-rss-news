@@ -44,6 +44,17 @@ function sendMissingCategoriesErrorIfNull(categories) {
 	return false;
 }
 
+function sendAnalytics(category) {
+  var req = new XMLHttpRequest();
+
+  var fullPath = BASE_URL_V1 + 'analytics?message=' + encodeURIComponent(category);
+  req.open('post', fullPath, true);
+  req.setRequestHeader('PebbleAccountToken', Pebble.getAccountToken());
+  req.setRequestHeader('PebbleWatchType', getWatchType().platform);
+  req.setRequestHeader('AppVersion', APP_VERSION);
+  req.send(null);
+}
+
 Pebble.addEventListener('appmessage',
   function(e) {
     console.log('Received message: ' + JSON.stringify(e.payload));
@@ -64,6 +75,7 @@ Pebble.addEventListener('appmessage',
 						if (category in headlines) {
 			          	  	console.log("Headlines found for " + category);
 			          	  	obj.GET_HEADLINES = headlines[category].latest.content;
+			          	  	sendAnalytics(category);
 						} else {
 			          	  	console.log("No headlines found for " + category);
 			          	  	sendError("No headlines found for " + category);

@@ -7,7 +7,7 @@
 #define UP_MAIN_MENU 12
 #define GET_HEADLINES 10
 #define LINE_HEIGHT 20
-#define NUM_CHARS_IN_LINE 26
+#define NUM_CHARS_IN_LINE 13
 
 static Window *s_window;
 
@@ -26,7 +26,6 @@ static int selectedMenuCell = 0;
 
 static char _categories[60][50];
 
-static GFont s_res_droid_serif_28_bold;
 static TextLayer *s_textlayer_1;
 static TextLayer *s_textlayer_2;
 static TextLayer *s_textlayer_menu_item;
@@ -258,15 +257,35 @@ static void initialise_ui(void) {
   window_set_click_config_provider(s_window, (ClickConfigProvider) config_provider);
 
   Layer *window_layer = window_get_root_layer(s_window);
-
-  s_res_droid_serif_28_bold = fonts_get_system_font(FONT_KEY_GOTHIC_14);
   
-  s_textlayer_menu_item = text_layer_create(GRect(0, 52, 144, 27));
+//   GTextOverflowModeWordWrap
+  
+  s_textlayer_menu_item = text_layer_create(GRect(0, 52, 144, 60));
   text_layer_set_text(s_textlayer_menu_item, "");
   text_layer_set_text_alignment(s_textlayer_menu_item, GTextAlignmentCenter);
-  text_layer_set_font(s_textlayer_menu_item, s_res_droid_serif_28_bold);
+  text_layer_set_font(s_textlayer_menu_item, fonts_get_system_font(FONT_KEY_GOTHIC_28));
+  text_layer_set_overflow_mode(s_textlayer_menu_item, GTextOverflowModeWordWrap);
   layer_add_child(window_layer, (Layer *)s_textlayer_menu_item);
   show_menu_item(0);
+  
+  
+// static ActionMenu *s_action_menu;
+// static ActionMenuLevel *s_root_level;
+//   
+// // Configure the ActionMenu Window about to be shown
+// ActionMenuConfig config = (ActionMenuConfig) {
+//   .root_level = s_root_level,
+//   .colors = {
+//     .background = GColorChromeYellow,
+//     .foreground = GColorBlack,
+//   },
+//   .align = ActionMenuAlignCenter
+// };
+// 
+// // Show the ActionMenu
+// s_action_menu = action_menu_open(&config);
+  
+  GFont s_res_droid_serif_28_bold = fonts_get_system_font(FONT_KEY_GOTHIC_14);
   
 #ifndef PBL_PLATFORM_APLITE
 #ifdef PBL_ROUND
