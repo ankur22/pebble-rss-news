@@ -31,8 +31,6 @@ static TextLayer *s_textlayer_1;
 static TextLayer *s_textlayer_2;
 static TextLayer *s_textlayer_menu_item;
 
-static int imageNumber = 0;
-
 
 static int _numLatestItems = 0;
 static char *_latestArray[20];
@@ -65,124 +63,6 @@ static void hide_no_con_error() {
     layer_set_hidden((Layer *)s_textlayer_1, true);
 }
 
-static uint16_t menu_get_num_sections_callback(MenuLayer *menu_layer, void *data) {
-  return NUM_MENU_SECTIONS;
-}
-
-static int16_t num_lines(MenuIndex *cell_index) {
-    char* fullLine = _categories[cell_index->row];
-    int length = strlen(fullLine);
-
-    /*static char s_buffer[128];
-    snprintf(s_buffer, sizeof(s_buffer), "num_lines called for '%d'|%s|%d", cell_index->row, fullLine, length);
-    APP_LOG(APP_LOG_LEVEL_DEBUG, s_buffer);*/
-
-    int num_lines = 0;
-    int count = 0;
-    int word = 0;
-    for (int i = 0; i < length; ++i) {
-        char* character = &fullLine[i];
-        count += 1;
-        word += 1;
-        if (*character == ' ') {
-            word = 0;
-        }
-        if (count > NUM_CHARS_IN_LINE) {
-            i -= word;
-            word = 0;
-            count = 0;
-            num_lines += 1;
-        }
-    }
-    if (num_lines == 0 && length > 0) {
-        num_lines = 1;
-    }
-
-    return num_lines;
-}
-
-static int16_t row_height(MenuIndex *cell_index) {
-    return LINE_HEIGHT * num_lines(cell_index);
-}
-
-static int16_t wp_cell_height(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
-  switch (cell_index->section) {
-    case 0:
-        if (numMenuItems > 0) {
-            return row_height(cell_index) + 20;
-        }
-    break;
-  }
-  return MAX_CELL_HEIGHT;
-}
-
-static uint16_t menu_get_num_rows_callback(MenuLayer *menu_layer, uint16_t section_index, void *data) {
-  switch (section_index) {
-    case 0:
-      return numMenuItems;
-    default:
-      return 0;
-  }
-}
-
-static int16_t menu_get_header_height_callback(MenuLayer *menu_layer, uint16_t section_index, void *data) {
-  return MENU_CELL_BASIC_HEADER_HEIGHT;
-}
-
-#ifndef PBL_PLATFORM_APLITE
-static void menu_draw_row_callback_basalt(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
-    if (selectedMenuCell == cell_index->row) {
-        graphics_context_set_text_color(ctx, GColorWhite);
-    } else {
-        graphics_context_set_text_color(ctx, GColorBlack);
-    }
-#ifdef PBL_ROUND
-    GRect headline_bounds = GRect(25, 8, 136, row_height(cell_index));
-#else
-    GRect headline_bounds = GRect(5, 8, 136, row_height(cell_index));
-#endif
-    graphics_draw_text(ctx, _categories[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD), headline_bounds, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
-}
-#else
-static void menu_draw_row_callback_aplite(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
-    if (selectedMenuCell == cell_index->row) {
-        graphics_context_set_text_color(ctx, GColorWhite);
-    } else {
-        graphics_context_set_text_color(ctx, GColorBlack);
-    }
-    graphics_draw_text(ctx, _categories[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD), GRect(5, 8, 137, row_height(cell_index)), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
-}
-#endif
-
-static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
-  switch (cell_index->section) {
-    case 0:
-        if (numMenuItems > 0) {
-#ifndef PBL_PLATFORM_APLITE
-            menu_draw_row_callback_basalt(ctx, cell_layer, cell_index, data);
-#else
-            menu_draw_row_callback_aplite(ctx, cell_layer, cell_index, data);
-#endif
-        }
-    break;
-  }
-}
-
-static int16_t get_menu_separator_height(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *callback_context) {
-    return 0;
-}
-
-static void menu_draw_separator(GContext *ctx, const Layer *cell_layer, MenuIndex *cell_index, void *callback_context) {
-  switch (cell_index->section) {
-    case 0:
-        if (numMenuItems > 0) {
-            //graphics_context_set_stroke_color(ctx, GColorBlack);
-            //graphics_draw_line(ctx, GPoint(5, 3), GPoint(139, 3));
-        }
-    break;
-  }
-}
-
 static void do_post(char *category, int key) {
     if (bluetooth_connection_service_peek()) {
       APP_LOG(APP_LOG_LEVEL_INFO, "CatView: Phone is connected!");
@@ -196,40 +76,6 @@ static void do_post(char *category, int key) {
       hide_animation();
       show_no_con_error();
     }
-}
-
-static void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
-  switch (cell_index->section) {
-    case 0:
-      if (numMenuItems > 0) {
-        do_post(_categories[cell_index->row], GET_HEADLINES);
-        APP_LOG(APP_LOG_LEVEL_DEBUG, _categories[cell_index->row]);
-        light_enable_interaction();
-        show_animation();
-      }
-    break;
-  }
-}
-
-static void menu_draw_header_callback(GContext* ctx, const Layer *cell_layer, uint16_t section_index, void *data) {
-  switch (section_index) {
-    case 0:
-#ifdef PBL_ROUND
-      menu_cell_basic_header_draw(ctx, cell_layer, "                    rss-news");
-#else
-      menu_cell_basic_header_draw(ctx, cell_layer, "rss-news");
-#endif
-      break;
-  }
-}
-
-static void menu_selection_changed(struct MenuLayer *menu_layer, MenuIndex new_index, MenuIndex old_index, void *callback_context) {
-  switch (new_index.section) {
-    case 0:
-      selectedMenuCell = new_index.row;
-      light_enable_interaction();
-      break;
-  }
 }
 
 static void destroy_ui(void) {
@@ -293,8 +139,6 @@ static int split_string(char *fullString, char **array, char **arrayUrl, char **
 
 static void showLatestView(char* latest) {
   _numLatestItems = split_string(latest, _latestArray, _latestArrayUrl, _latestArraySource, _latestArrayCategory);
-  
-//   hide_category_view();
   
   show_latest_view(_latestArray, _latestArrayUrl, _latestArraySource, _latestArrayCategory, _numLatestItems);
   
@@ -417,6 +261,13 @@ static void initialise_ui(void) {
 
   s_res_droid_serif_28_bold = fonts_get_system_font(FONT_KEY_GOTHIC_14);
   
+  s_textlayer_menu_item = text_layer_create(GRect(0, 52, 144, 27));
+  text_layer_set_text(s_textlayer_menu_item, "");
+  text_layer_set_text_alignment(s_textlayer_menu_item, GTextAlignmentCenter);
+  text_layer_set_font(s_textlayer_menu_item, s_res_droid_serif_28_bold);
+  layer_add_child(window_layer, (Layer *)s_textlayer_menu_item);
+  show_menu_item(0);
+  
 #ifndef PBL_PLATFORM_APLITE
 #ifdef PBL_ROUND
   s_bitmap_layer = bitmap_layer_create(GRect(57, 52, 64, 64));
@@ -451,13 +302,6 @@ static void initialise_ui(void) {
   text_layer_set_font(s_textlayer_1, s_res_droid_serif_28_bold);
   layer_add_child(window_layer, (Layer *)s_textlayer_1);
   hide_no_con_error();
-
-  s_textlayer_menu_item = text_layer_create(GRect(0, 52, 144, 27));
-  text_layer_set_text(s_textlayer_menu_item, "");
-  text_layer_set_text_alignment(s_textlayer_menu_item, GTextAlignmentCenter);
-  text_layer_set_font(s_textlayer_menu_item, s_res_droid_serif_28_bold);
-  layer_add_child(window_layer, (Layer *)s_textlayer_menu_item);
-  show_menu_item(0);
   
 #ifndef PBL_PLATFORM_APLITE
   // Set up the status bar last to ensure it is on top of other Layers
@@ -481,8 +325,4 @@ void show_category_view(char **categories, int num) {
   window_stack_push(s_window, true);
   
   APP_LOG(APP_LOG_LEVEL_DEBUG, "Latest view added to window stack");
-}
-
-void hide_category_view(void) {
-  window_stack_remove(s_window, true);
 }
