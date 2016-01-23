@@ -392,7 +392,7 @@ static void initialise_ui(void) {
   layer_add_child(window_layer, (Layer *)s_textlayer_rssnews);
 
 #ifdef PBL_ROUND
-  s_textlayer_menu_item = text_layer_create(GRect(10, 54, 116, 60));
+  s_textlayer_menu_item = text_layer_create(GRect(10, 60, 116, 60));
 #else
   s_textlayer_menu_item = text_layer_create(GRect(0, 54, 116, 60));
 #endif
@@ -439,7 +439,7 @@ static void initialise_ui(void) {
   
   // Setup the right arrow
 #ifdef PBL_ROUND
-  right_arrow_layer = layer_create(GRect(160, 78, 144, 168));
+  right_arrow_layer = layer_create(GRect(160, 80, 144, 168));
 #else
   right_arrow_layer = layer_create(GRect(127, 74, 144, 168));
 #endif
