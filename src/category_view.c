@@ -65,6 +65,11 @@ static const GPathInfo BOLT_PATH_INFO_RIGHT = {
   .points = (GPoint []) {{0, 0}, {10, 8}, {0, 16}}
 };
 
+static const GPathInfo RIGHT_PANEL_BG_RND = {
+  .num_points = 4,
+  .points = (GPoint []) {{136, 0}, {180, 0}, {180, 180}, {136, 180}}
+};
+
 static const GPathInfo RIGHT_PANEL_BG = {
   .num_points = 4,
   .points = (GPoint []) {{121, 0}, {144, 0}, {144, 168}, {121, 168}}
@@ -132,7 +137,11 @@ void setup_my_path(void) {
   s_up_path_ptr = gpath_create(&BOLT_PATH_INFO);
   s_down_path_ptr = gpath_create(&BOLT_PATH_INFO_DOWN);
   s_right_path_ptr = gpath_create(&BOLT_PATH_INFO_RIGHT);
+#ifdef PBL_ROUND
+  s_right_panel_path_ptr = gpath_create(&RIGHT_PANEL_BG_RND);
+#else
   s_right_panel_path_ptr = gpath_create(&RIGHT_PANEL_BG);
+#endif
 //   s_heart_path_ptr = gpath_create(&HEART_VERTICES);
 }
 
@@ -373,13 +382,20 @@ static void initialise_ui(void) {
 
   Layer *window_layer = window_get_root_layer(s_window);
 
-  
+#ifdef PBL_ROUND
+  s_textlayer_rssnews = text_layer_create(GRect(50, 15, 116, 60));
+#else
   s_textlayer_rssnews = text_layer_create(GRect(10, 15, 116, 60));
+#endif
   text_layer_set_text(s_textlayer_rssnews, "rss-news");
   text_layer_set_font(s_textlayer_rssnews, fonts_get_system_font(FONT_KEY_GOTHIC_24));
   layer_add_child(window_layer, (Layer *)s_textlayer_rssnews);
-  
+
+#ifdef PBL_ROUND
+  s_textlayer_menu_item = text_layer_create(GRect(10, 54, 116, 60));
+#else
   s_textlayer_menu_item = text_layer_create(GRect(0, 54, 116, 60));
+#endif
   text_layer_set_text(s_textlayer_menu_item, "");
   text_layer_set_text_alignment(s_textlayer_menu_item, GTextAlignmentCenter);
   text_layer_set_font(s_textlayer_menu_item, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
@@ -395,22 +411,38 @@ static void initialise_ui(void) {
 //   layer_add_child(window_layer, (Layer *)heart_layer);
   
   // Setup the right panel
+#ifdef PBL_ROUND
+  right_panel_layer = layer_create(GRect(0, 0, 180, 180));
+#else
   right_panel_layer = layer_create(GRect(0, 0, 144, 168));
+#endif
   layer_set_update_proc(right_panel_layer, right_panel_layer_update_proc);
   layer_add_child(window_layer, (Layer *)right_panel_layer);
   
   // Setup the up arrow
+#ifdef PBL_ROUND
+  up_arrow_layer = layer_create(GRect(140, 34, 144, 168));
+#else
   up_arrow_layer = layer_create(GRect(124, 20, 144, 168));
+#endif
   layer_set_update_proc(up_arrow_layer, up_layer_update_proc);
   layer_add_child(window_layer, (Layer *)up_arrow_layer);
   
   // Setup the down arrow
+#ifdef PBL_ROUND
+  down_arrow_layer = layer_create(GRect(140, 130, 144, 168));
+#else
   down_arrow_layer = layer_create(GRect(124, 143, 144, 168));
+#endif
   layer_set_update_proc(down_arrow_layer, down_layer_update_proc);
   layer_add_child(window_layer, (Layer *)down_arrow_layer);
   
   // Setup the right arrow
+#ifdef PBL_ROUND
+  right_arrow_layer = layer_create(GRect(160, 78, 144, 168));
+#else
   right_arrow_layer = layer_create(GRect(127, 74, 144, 168));
+#endif
   layer_set_update_proc(right_arrow_layer, right_layer_update_proc);
   layer_add_child(window_layer, (Layer *)right_arrow_layer);
   
