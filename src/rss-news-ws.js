@@ -1,4 +1,4 @@
-var APP_VERSION = "1.28";
+var APP_VERSION = "1.29";
 var BASE_URL = "https://rss-news.appspot.com/0/pebble/";
 var BASE_URL_V1 = "https://rss-news.appspot.com/1/pebble/";
 var BASE_READINGLIST_URL = "rss-news.appspot.com/pebble/";
